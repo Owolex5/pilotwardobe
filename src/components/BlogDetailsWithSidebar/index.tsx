@@ -3,7 +3,7 @@ import Breadcrumb from "../Common/Breadcrumb";
 import SearchForm from "../Blog/SearchForm";
 import LatestPosts from "../Blog/LatestPosts";
 import LatestProducts from "../Blog/LatestProducts";
-import blogData from "../BlogGrid/blogData";
+import blogData from "../../data/blogData";
 import Image from "next/image";
 import shopData from "../Shop/shopData"; 
 

@@ -1,43 +1,52 @@
+// components/categories/categoryData.ts
 const data = [
   {
-    title: "Televisions",
     id: 1,
-    img: "/images/categories/categories-01.png",
+    title: "Headsets",
+    img: "/images/pward/9645a_christmas_web.webp", // Download & add
+    link: "/shop/headsets",
   },
   {
-    title: "Laptop & PC",
     id: 2,
-    img: "/images/categories/categories-02.png",
+    title: "Uniforms",
+    img: "/images/pward/Pilot-Uniform-Pants-Falcon-Womens-Charcoal-Gray-WPAA__01565.jpg",
+    link: "/shop/uniforms",
   },
   {
-    title: "Mobile & Tablets",
     id: 3,
-    img: "/images/categories/categories-03.png",
+    title: "Epaulettes & Wings",
+    img: "/images/pward/1barep__34526.jpg",
+    link: "/shop/epaulettes",
   },
   {
-    title: "Games & Videos",
     id: 4,
-    img: "/images/categories/categories-04.png",
+    title: "Flight Bags",
+    img: "/images/pward/iPad_Bag.webp",
+    link: "/shop/flight-bags",
   },
   {
-    title: "Home Appliances",
     id: 5,
-    img: "/images/categories/categories-05.png",
+    title: "Sunglasses",
+    img: "/images/pward/Meta.webp",
+    link: "/shop/sunglasses",
   },
   {
-    title: "Health & Sports",
     id: 6,
-    img: "/images/categories/categories-06.png",
-  },
-  {
     title: "Watches",
-    id: 7,
-    img: "/images/categories/categories-07.png",
+    img: "/images/pward/D2_Mach_2_1.webp",
+    link: "/shop/watches",
   },
   {
-    title: "Televisions",
+    id: 7,
+    title: "Aircraft Parts",
+    img: "/images/pward/partsx.jpg",
+    link: "/shop/aircraft-parts",
+  },
+  {
     id: 8,
-    img: "/images/categories/categories-04.png",
+    title: "Gadgets & Accessories",
+    img: "/images/pward/Flight_Gear_Smart_Battery_Pack_Max.webp",
+    link: "/shop/accessories",
   },
 ];
 

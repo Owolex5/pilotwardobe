@@ -1,6 +1,6 @@
 import React from "react";
 import Breadcrumb from "../Common/Breadcrumb";
-import blogData from "./blogData";
+import blogData from "../../data/blogData";
 import BlogItem from "../Blog/BlogItem";
 
 const BlogGrid = () => {

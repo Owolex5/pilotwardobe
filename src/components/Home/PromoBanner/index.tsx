@@ -9,7 +9,7 @@ const PromoBanner = () => {
         <div className="relative z-1 overflow-hidden rounded-lg bg-[#F5F5F7] py-12.5 lg:py-17.5 xl:py-22.5 px-4 sm:px-7.5 lg:px-14 xl:px-19 mb-7.5">
           <div className="max-w-[550px] w-full">
             <span className="block font-medium text-xl text-dark mb-3">
-              Apple iPhone 14 Plus
+              Exchange Your Gears
             </span>
 
             <h2 className="font-bold text-xl lg:text-heading-4 xl:text-heading-3 text-dark mb-5">
@@ -17,8 +17,8 @@ const PromoBanner = () => {
             </h2>
 
             <p>
-              iPhone 14 has the same superspeedy chip that’s in iPhone 13 Pro,
-              A15 Bionic, with a 5‑core GPU, powers all the latest features.
+                             List your headsets, uniforms, flight bags, or parts in minutes. Reach thousands of pilots worldwide.
+              
             </p>
 
             <a
@@ -30,7 +30,7 @@ const PromoBanner = () => {
           </div>
 
           <Image
-            src="/images/promo/promo-01.png"
+            src="/images/pward/engrey2__77358.png"
             alt="promo img"
             className="absolute bottom-0 right-4 lg:right-26 -z-1"
             width={274}
@@ -42,7 +42,7 @@ const PromoBanner = () => {
           {/* <!-- promo banner small --> */}
           <div className="relative z-1 overflow-hidden rounded-lg bg-[#DBF4F3] py-10 xl:py-16 px-4 sm:px-7.5 xl:px-10">
             <Image
-              src="/images/promo/promo-02.png"
+              src="/images/pward/Falcon-Mens-Regular-Gray-MPFU1__29902-removebg-preview.png"
               alt="promo img"
               className="absolute top-1/2 -translate-y-1/2 left-3 sm:left-10 -z-1"
               width={241}
@@ -50,31 +50,32 @@ const PromoBanner = () => {
             />
 
             <div className="text-right">
-              <span className="block text-lg text-dark mb-1.5">
-                Foldable Motorised Treadmill
-              </span>
+            <span className="block text-lg text-dark mb-1.5">
+  Professional Pilot Trousers
+</span>
 
-              <h2 className="font-bold text-xl lg:text-heading-4 text-dark mb-2.5">
-                Workout At Home
-              </h2>
+<h2 className="font-bold text-xl lg:text-heading-4 text-dark mb-2.5">
+  Comfort. Precision. Authority.
+</h2>
 
-              <p className="font-semibold text-custom-1 text-teal">
-                Flat 20% off
-              </p>
+<p className="font-semibold text-custom-1 text-teal">
+  Flat 20% off
+</p>
 
-              <a
-                href="#"
-                className="inline-flex font-medium text-custom-sm text-white bg-teal py-2.5 px-8.5 rounded-md ease-out duration-200 hover:bg-teal-dark mt-9"
-              >
-                Grab Now
-              </a>
+<a
+  href="#"
+  className="inline-flex font-medium text-custom-sm text-white bg-teal py-2.5 px-8.5 rounded-md ease-out duration-200 hover:bg-teal-dark mt-9"
+>
+  Shop Now
+</a>
+
             </div>
           </div>
 
           {/* <!-- promo banner small --> */}
           <div className="relative z-1 overflow-hidden rounded-lg bg-[#FFECE1] py-10 xl:py-16 px-4 sm:px-7.5 xl:px-10">
             <Image
-              src="/images/promo/promo-03.png"
+              src="/images/pward/d2mach2_51mm_hr_front_0001_wf_red-removebg-preview.png"
               alt="promo img"
               className="absolute top-1/2 -translate-y-1/2 right-3 sm:right-8.5 -z-1"
               width={200}
@@ -83,11 +84,11 @@ const PromoBanner = () => {
 
             <div>
               <span className="block text-lg text-dark mb-1.5">
-                Apple Watch Ultra
+                Gormin Dwatch
               </span>
 
               <h2 className="font-bold text-xl lg:text-heading-4 text-dark mb-2.5">
-                Up to <span className="text-orange">40%</span> off
+                Up to <span className="text-orange">10%</span> off
               </h2>
 
               <p className="max-w-[285px] text-custom-sm">

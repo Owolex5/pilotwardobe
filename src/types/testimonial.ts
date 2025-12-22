@@ -1,6 +1,9 @@
-export type Testimonial = {
+// src/types/testimonial.ts
+
+export interface Testimonial {
   review: string;
   authorName: string;
-  authorRole: string;
   authorImg: string;
-};
+  authorRole: string;
+  rating: number;  // ← ADD THIS LINE
+}

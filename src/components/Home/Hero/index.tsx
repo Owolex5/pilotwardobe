@@ -29,19 +29,20 @@ const Hero = () => {
                 <div className="flex items-center gap-14">
                   <div>
                     <h2 className="max-w-[153px] font-semibold text-dark text-xl mb-20">
-                      <a href="#"> iPhone 14 Plus & 14 Pro Max </a>
+                      <a href="#">Uniforms & Epaulettes </a>
                     </h2>
 
                     <div>
                       <p className="font-medium text-dark-4 text-custom-sm mb-1.5">
-                        limited time offer
+                       
+                        Airline Quality, Gently Used
                       </p>
                       <span className="flex items-center gap-3">
                         <span className="font-medium text-heading-5 text-red">
-                          $699
+                          $299
                         </span>
                         <span className="font-medium text-2xl text-dark-4 line-through">
-                          $999
+                          $499
                         </span>
                       </span>
                     </div>
@@ -49,10 +50,10 @@ const Hero = () => {
 
                   <div>
                     <Image
-                      src="/images/hero/hero-02.png"
-                      alt="mobile image"
-                      width={123}
-                      height={161}
+                      src="/images/pward/Epaulets-Navy-and-Gold-3-Stripes-ENGOLD3__00532__01636.jpg"
+                      alt="Pilot Uniforms and Epaulettes"
+                      width={159}
+                      height={141}
                     />
                   </div>
                 </div>
@@ -61,19 +62,19 @@ const Hero = () => {
                 <div className="flex items-center gap-14">
                   <div>
                     <h2 className="max-w-[153px] font-semibold text-dark text-xl mb-20">
-                      <a href="#"> Wireless Headphone </a>
+                      <a href="#"> Aviation Headset </a>
                     </h2>
 
                     <div>
                       <p className="font-medium text-dark-4 text-custom-sm mb-1.5">
-                        limited time offer
+                         New & Pre-Owned Premium Models
                       </p>
                       <span className="flex items-center gap-3">
                         <span className="font-medium text-heading-5 text-red">
-                          $699
+                          $140
                         </span>
                         <span className="font-medium text-2xl text-dark-4 line-through">
-                          $999
+                          $280
                         </span>
                       </span>
                     </div>
@@ -81,7 +82,7 @@ const Hero = () => {
 
                   <div>
                     <Image
-                      src="/images/hero/hero-01.png"
+                      src="/images/pward/Bose_A30_1.webp"
                       alt="mobile image"
                       width={123}
                       height={161}
