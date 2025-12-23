@@ -1,25 +1,45 @@
-# Free eCommerce Template for Next.js - NextMerce
+# 🧑‍✈️ PilotWardrobe
 
-The free Next.js eCommerce template is a lite version of the NextMerce Next.js eCommerce boilerplate, designed to streamline the launch and management of your online store.
+**PilotWardrobe** is a modern aviation-focused marketplace and content platform built with **Next.js**. It helps pilots and aviation enthusiasts discover, review, and shop for verified pilot gear — from uniforms and headsets to flight bags and accessories.
 
-![NextMerce](https://github.com/user-attachments/assets/57155689-a756-4222-8af7-134e556acae2)
+---
 
+## 🌍 Project Overview
 
-While NextMerce Pro features advanced functionalities, seamless integration, and customizable options, providing all the essential tools needed to build and expand your business, the lite version offers a basic Next.js template specifically crafted for eCommerce websites. Both versions ensure superior performance and flexibility, all powered by Next.js.
+PilotWardrobe combines:
+- 🛍️ **E-commerce** for pilot gear  
+- 📰 **Aviation blog** (guides, reviews, buying tips)  
+- 🤖 **AI-assisted uniform recommendations**  
+- ⚡ **High-performance Next.js App Router**
 
-### NextMerce Free VS NextMerce Pro
+---
 
-| ✨ Features                         | 🎁 NextMerce Free                 | 🔥 NextMerce Pro                        |
-|----------------------------------|--------------------------------|--------------------------------------|
-| Next.js Pages                    | Static                         | Dynamic Boilerplate Template         |
-| Components                       | Limited                        | All According to Demo                |
-| eCommerce Functionality          | Included                       | Included                             |
-| Integrations (DB, Auth, etc.)    | Not Included                   | Included                             |
-| Community Support                | Included                       | Included                             |
-| Premium Email Support            | Not Included                   | Included                             |
-| Lifetime Free Updates            | Included                       | Included                             |
+## ✨ Features
 
+- ✅ Modern **Next.js App Router** architecture  
+- 🛒 Product listings & detailed shop pages  
+- 🔍 Recently viewed products carousel  
+- 🧠 **AI Uniform Recommender** (uniform products only)  
+- 📰 Blog system with SEO-friendly routing  
+- 📱 Fully responsive & mobile-first UI  
+- ⚡ Optimized images using `next/image`  
+- 🌐 SEO metadata with Open Graph support  
+- 🎨 Tailwind CSS styling  
+- 🧩 Clean, modular, and scalable codebase  
 
-#### [🚀 Live Demo](https://demo.nextmerce.com/)
+---
 
-#### [🌐 Visit Website](https://nextmerce.com/)
+## 🛠 Tech Stack
+
+- **Framework:** Next.js 16 (App Router, Turbopack)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
+- **State Management:** Redux Toolkit
+- **Carousel:** Swiper.js
+- **Images:** Next.js Image Optimization
+- **Deployment:** Vercel (recommended)
+
+---
+
+## 📁 Project Structure
+
