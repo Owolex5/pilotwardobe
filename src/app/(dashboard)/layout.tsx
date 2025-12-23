@@ -4,8 +4,7 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
 // Correct path when css/ is inside app/
-import '../css/euclid-circular-a-font.css'
-import '../css/style.css'
+import '../globals.css';  // ← ONLY ONE ../
 
 export default async function DashboardLayout({
   children,

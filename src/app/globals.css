@@ -1,10 +1,10 @@
 /* src/app/globals.css */
+
+/* ALL @import statements MUST come first */
+@import "./css/euclid-circular-a-font.css";
+@import "./css/style.css";
+
+/* Then the Tailwind directives */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Optional: import your fonts */
-@import "./css/euclid-circular-a-font.css";
-
-/* Your existing custom styles */
-@import "./css/style.css";
