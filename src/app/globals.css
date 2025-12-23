@@ -1,0 +1,10 @@
+/* src/app/globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Optional: import your fonts */
+@import "./css/euclid-circular-a-font.css";
+
+/* Your existing custom styles */
+@import "./css/style.css";
