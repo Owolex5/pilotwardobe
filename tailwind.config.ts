@@ -2,11 +2,13 @@ import type { Config } from "tailwindcss";
 
 const defaultTheme = require("tailwindcss/defaultTheme");
 
-const config: Config = {
+
+ const config = {
   content: [
-    "./src/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/**/*.{js,ts,jsx,tsx,mdx}",           // All under src (covers components, app, etc.)
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",           // Direct app folder if anything there
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",         // If using pages router anywhere
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",    // Extra safety
   ],
   darkMode: "class",
   theme: {
