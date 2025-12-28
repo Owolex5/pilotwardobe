@@ -84,7 +84,7 @@ const PromoBanner = () => {
 
             <div>
               <span className="block text-lg text-dark mb-1.5">
-                Gormin Dwatch
+                Garmin Dwatch
               </span>
 
               <h2 className="font-bold text-xl lg:text-heading-4 text-dark mb-2.5">

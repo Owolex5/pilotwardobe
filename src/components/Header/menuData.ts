@@ -3,21 +3,21 @@ import { Menu } from "@/types/Menu";
 export const menuData: Menu[] = [
   {
     id: 1,
+    title: "Home",
+    newTab: false,
+    path: "/home",
+  },
+  {
+    id: 2,
     title: "Shop",
     newTab: false,
     path: "/shop-without-sidebar",
   },
   {
-    id: 2,
+    id: 3,
     title: "Exchange",
     newTab: false,
     path: "/SwapExchange",
-  },
-  {
-    id: 3,
-    title: "About",
-    newTab: false,
-    path: "/about",
   },
   {
     id: 4,
@@ -25,12 +25,14 @@ export const menuData: Menu[] = [
     newTab: false,
     path: "/sell",
   },
+  
   {
     id: 5,
     title: "Contact",
     newTab: false,
     path: "/contact",
   },
+
 //   {
 //     id: 6,
 //     title: "pages",
@@ -105,12 +107,13 @@ export const menuData: Menu[] = [
 //       },
 //     ],
 //   },
-{
-    id: 6,
-    title: "Blog",
-    newTab: false,
-    path: "/blog",
-  }
+
+// {
+//     id: 6,
+//     title: "Blog`",
+//     newTab: false,
+//     path: "/blog",
+//   }
 //   {
 //     id: 7,
 //     title: "blogs",

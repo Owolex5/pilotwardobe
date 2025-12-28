@@ -1,5 +1,3 @@
-// src/components/Auth/Signup.tsx
-
 "use client";
 
 import React, { useState } from "react";
@@ -40,14 +38,17 @@ const Signup = () => {
 
   return (
     <>
-      <section className="overflow-hidden py-20 bg-gray-2">
+      {/* FIX: Added min-h-screen and flex to center the content.
+        Updated pt-32 for mobile to clear the header. 
+      */}
+      <section className="min-h-screen overflow-hidden pt-72 pb-36 lg:pt-54 lg:pb-32 bg-gray-2 flex items-center">
         <div className="max-w-[1170px] w-full mx-auto px-4 sm:px-8 xl:px-0">
-          <div className="max-w-[570px] w-full mx-auto rounded-xl bg-white shadow-1 p-4 sm:p-7.5 xl:p-11">
+          <div className="max-w-[570px] w-full mx-auto rounded-xl bg-white shadow-1 p-6 sm:p-8 lg:p-11">
             <div className="text-center mb-11">
-              <h2 className="font-semibold text-xl sm:text-2xl xl:text-heading-5 text-dark mb-1.5">
+              <h2 className="font-semibold text-xl sm:text-2xl lg:text-heading-5 text-dark mb-1.5">
                 Create Your PilotWardrobe Account
               </h2>
-              <p>Join thousands of pilots buying and selling gear</p>
+              <p className="text-base sm:text-lg">Join thousands of pilots buying and selling gear</p>
             </div>
 
             {success ? (
@@ -63,64 +64,67 @@ const Signup = () => {
               </div>
             ) : (
               <form onSubmit={handleSignUp}>
-                <div className="mb-5">
-                  <label htmlFor="name" className="block mb-2.5">
+                <div className="mb-6">
+                  <label htmlFor="name" className="block mb-2.5 text-sm font-medium text-dark">
                     Full Name
                   </label>
                   <input
                     type="text"
+                    id="name"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     required
                     placeholder="Captain John Doe"
-                    className="rounded-lg border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-3 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
+                    className="rounded-lg border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-3.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
                   />
                 </div>
 
-                <div className="mb-5">
-                  <label htmlFor="email" className="block mb-2.5">
+                <div className="mb-6">
+                  <label htmlFor="email" className="block mb-2.5 text-sm font-medium text-dark">
                     Email Address
                   </label>
                   <input
                     type="email"
+                    id="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     placeholder="captain@example.com"
-                    className="rounded-lg border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-3 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
+                    className="rounded-lg border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-3.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
                   />
                 </div>
 
-                <div className="mb-5">
-                  <label htmlFor="password" className="block mb-2.5">
+                <div className="mb-8">
+                  <label htmlFor="password" className="block mb-2.5 text-sm font-medium text-dark">
                     Password
                   </label>
                   <input
                     type="password"
+                    id="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     minLength={6}
                     placeholder="Minimum 6 characters"
-                    className="rounded-lg border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-3 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
+                    className="rounded-lg border border-gray-3 bg-gray-1 placeholder:text-dark-5 w-full py-3.5 px-5 outline-none duration-200 focus:border-transparent focus:shadow-input focus:ring-2 focus:ring-blue/20"
                   />
                 </div>
 
                 {error && (
-                  <p className="text-red-500 text-center mb-4">{error}</p>
+                  <p className="text-red-500 text-center mb-6 bg-red-50 py-3 rounded-lg text-sm">{error}</p>
                 )}
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full flex justify-center font-medium text-white bg-blue py-3 px-6 rounded-lg ease-out duration-200 hover:bg-blue-dark mt-7.5 disabled:opacity-70"
+                  className="w-full flex justify-center font-medium text-white bg-blue py-4 px-6 rounded-lg ease-out duration-200 hover:bg-opacity-90 disabled:opacity-70"
                 >
                   {loading ? "Creating account..." : "Create Account"}
                 </button>
               </form>
             )}
 
-            <p className="text-center mt-6">
+            <p className="text-center mt-8 text-gray-600">
               Already have an account?{" "}
               <Link href="/signin" className="text-blue font-semibold hover:underline">
                 Sign In

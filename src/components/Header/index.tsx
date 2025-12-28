@@ -65,11 +65,11 @@ const Header = () => {
           <div className="xl:w-auto flex-col sm:flex-row w-full flex sm:justify-between sm:items-center gap-5 sm:gap-10">
             <Link className="flex-shrink-0" href="/">
               <Image
-                src="/images/logo/logo1.png" // Update this with your actual logo
+                src="/images/logo/logo.png" // Update this with your actual logo
                 alt="PilotWardrobe Logo"
                 width={180}
                 height={48}
-                className="h-10 sm:h-12 w-auto"
+                className="h-20 sm:h-20 w-auto"
               />
             </Link>
 

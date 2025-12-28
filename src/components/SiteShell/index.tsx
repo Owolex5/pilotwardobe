@@ -1,20 +1,31 @@
-// src/components/SiteShell/index.tsx
 "use client";
 
 import { usePathname } from "next/navigation";
-import Header from "../Header";   // ← Go up one level to src/components/Header
-import Footer from "../Footer";   // ← Go up one level to src/components/Footer
+import Header from "../Header";
+import Footer from "../Footer";
 
 export default function SiteShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
-  const isDashboard = pathname.startsWith("/dashboard");
+  // Hide header & footer on these routes
+  const noLayoutRoutes = [
+    "/dashboard",
+    "/admin",
+    "/signin",
+    "/signup",
+    "/request-item", // optional: clean request page
+    "/sell",         // optional: clean sell form
+  ];
+
+  const shouldHideLayout = noLayoutRoutes.some(route => 
+    pathname.startsWith(route)
+  );
 
   return (
     <>
-      {!isDashboard && <Header />}
+      {!shouldHideLayout && <Header />}
       <main>{children}</main>
-      {!isDashboard && <Footer />}
+      {!shouldHideLayout && <Footer />}
     </>
   );
 }
