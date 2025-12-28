@@ -52,33 +52,34 @@ export default function AdminUsersPage() {
   }, [users, searchQuery, statusFilter, roleFilter])
 
   const loadUsers = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false })
+  try {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .order('created_at', { ascending: false })
 
-      if (error) throw error
+    if (error) throw error
 
-      setUsers(data || [])
-      setFilteredUsers(data || [])
+    setUsers(data || [])
+    setFilteredUsers(data || [])
 
-      // Calculate stats
-      const stats = {
-        total: data?.length || 0,
-        active: data?.filter(u => u.status === 'active').length || 0,
-        suspended: data?.filter(u => u.status === 'suspended').length || 0,
-        verified: data?.filter(u => u.email_confirmed_at).length || 0,
-        admins: data?.filter(u => u.role === 'admin').length || 0
-      }
-      setUserStats(stats)
-
-    } catch (error) {
-      console.error('Error loading users:', error)
-    } finally {
-      setLoading(false)
+    // Calculate stats - FIXED: Check if email exists instead
+    const stats = {
+      total: data?.length || 0,
+      active: data?.filter(u => u.status === 'active').length || 0,
+      suspended: data?.filter(u => u.status === 'suspended').length || 0,
+      // Changed from email_verified to checking if email exists
+      verified: data?.filter(u => u.email && u.email.trim() !== '').length || 0,
+      admins: data?.filter(u => u.role === 'admin').length || 0
     }
+    setUserStats(stats)
+
+  } catch (error) {
+    console.error('Error loading users:', error)
+  } finally {
+    setLoading(false)
   }
+}
 
   const filterUsers = () => {
     let filtered = [...users]

@@ -1,4 +1,3 @@
-// app/dashboard/page.tsx - ENHANCED VERSION (Real Data Only) - FIXED
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -6,6 +5,7 @@ import { supabase } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
+import { Database } from '@/types/database.types'
 
 import {
   Home,
@@ -65,17 +65,70 @@ import {
   TrendingDown
 } from 'lucide-react'
 
+// Use the generated types
+type Product = Database['public']['Tables']['products']['Row'] & {
+  user_id?: string; // For backward compatibility
+}
+
+type Profile = Database['public']['Tables']['profiles']['Row'] & {
+  email?: string;
+}
+
+type Order = Database['public']['Tables']['orders']['Row'] & {
+  product?: Product;
+  seller?: Profile;
+  buyer?: Profile;
+}
+
+type Payment = Database['public']['Tables']['payments']['Row'] & {
+  user_id?: string;
+  status?: 'pending' | 'completed' | 'failed';
+}
+
+type Request = Database['public']['Tables']['item_requests']['Row'] & {
+  user_id?: string;
+}
+
+type Message = {
+  id: string;
+  sender_id: string;
+  receiver_id: string;
+  content: string;
+  read: boolean;
+  created_at: string;
+}
+
+interface Activity {
+  type: string;
+  icon: any;
+  color: string;
+  title: string;
+  description: string;
+  time: string;
+  status: string;
+  action: () => void;
+}
+
+interface StatCard {
+  label: string;
+  value: string | number;
+  icon: any;
+  color: string;
+  change: string;
+  trend: 'up' | 'down' | 'neutral';
+}
+
 export default function Dashboard() {
   const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('overview')
-  const [userProfile, setUserProfile] = useState<any>(null)
-  const [listings, setListings] = useState<any[]>([])
-  const [orders, setOrders] = useState<any[]>([])
-  const [payments, setPayments] = useState<any[]>([])
-  const [requests, setRequests] = useState<any[]>([]) // Item requests
+  const [userProfile, setUserProfile] = useState<Profile | null>(null)
+  const [listings, setListings] = useState<Product[]>([])
+  const [orders, setOrders] = useState<Order[]>([])
+  const [payments, setPayments] = useState<Payment[]>([])
+  const [requests, setRequests] = useState<Request[]>([])
   const [stats, setStats] = useState({
     activeListings: 0,
     totalEarnings: 0,
@@ -86,10 +139,16 @@ export default function Dashboard() {
     totalRequests: 0,
     activeRequests: 0
   })
-  const [recentActivity, setRecentActivity] = useState<any[]>([])
-  const [messages, setMessages] = useState<any[]>([])
+  const [recentActivity, setRecentActivity] = useState<Activity[]>([])
+  const [messages, setMessages] = useState<Message[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const router = useRouter()
+
+  // Define handleSignOut BEFORE the JSX that uses it
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    router.push('/signin')
+  }
 
   useEffect(() => {
     const checkUser = async () => {
@@ -107,166 +166,252 @@ export default function Dashboard() {
     if (window.innerWidth < 1024) setSidebarOpen(false)
   }, [router])
 
-  const loadUserData = async (userId: string) => {
-    try {
-      // Load user profile
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single()
-      
-      if (!profileError) {
-        setUserProfile(profile)
-      }
+const loadUserData = async (userId: string) => {
+  try {
+    // Load user profile
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single()
+    
+    if (!profileError && profile) {
+      setUserProfile(profile)
+    }
 
-      // Load user's products (listings)
-      const { data: userProducts, error: productsError } = await supabase
-        .from('products')
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false })
-      
-      if (!productsError) {
-        setListings(userProducts || [])
-      }
+    // 1. Load user's products
+    const { data: userProducts, error: productsError } = await supabase
+      .from('products')
+      .select('*')
+      .eq('seller_id', userId)
+      .order('created_at', { ascending: false })
 
-      // Load user's orders (both as buyer and seller)
-      const { data: userOrders, error: ordersError } = await supabase
-        .from('orders')
-        .select(`
-          *,
-          product:products(*),
-          seller:profiles!orders_seller_id_fkey(*),
-          buyer:profiles!orders_buyer_id_fkey(*)
-        `)
-        .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
-        .order('created_at', { ascending: false })
-      
-      if (!ordersError) {
-        setOrders(userOrders || [])
-      }
+    if (productsError) {
+      console.error('Products error:', productsError)
+    } else {
+      setListings(userProducts || [])
+    }
 
-      // Load user's payments
+    // 2. Load orders (simplified to avoid complex joins)
+    const { data: userOrders, error: ordersError } = await supabase
+      .from('orders')
+      .select('*')
+      .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
+      .order('created_at', { ascending: false })
+
+    // Initialize ordersWithDetails as empty array
+    let ordersWithDetails: Order[] = []
+    
+    if (ordersError) {
+      console.error('Orders error:', ordersError)
+    } else if (userOrders && userOrders.length > 0) {
+      // Get unique product IDs - FIXED: Use Array.from instead of spread operator
+      const productIds = Array.from(new Set(userOrders
+        .map(order => order.product_id)
+        .filter((id): id is string => !!id)
+      ))
+      
+      // Load products
+      let products: Product[] = []
+      if (productIds.length > 0) {
+        const { data: productsData } = await supabase
+          .from('products')
+          .select('*')
+          .in('id', productIds)
+        products = productsData || []
+      }
+      
+      // Create a map for quick lookup
+      const productMap = new Map()
+      products?.forEach(product => {
+        productMap.set(product.id, product)
+      })
+      
+      // Create enriched order objects
+      ordersWithDetails = userOrders.map(order => ({
+        ...order,
+        product: order.product_id ? productMap.get(order.product_id) || undefined : undefined
+      }))
+    }
+    
+    setOrders(ordersWithDetails)
+
+    // 3. Payments - get order IDs from ordersWithDetails
+  // 3. Payments - get order IDs from ordersWithDetails
+    const orderIds = ordersWithDetails.map(o => o.id).filter(Boolean)
+    if (orderIds.length > 0) {
       const { data: userPayments, error: paymentsError } = await supabase
         .from('payments')
         .select('*')
+        .in('order_id', orderIds)
+        .order('created_at', { ascending: false })
+
+      if (paymentsError) {
+        console.error('Payments error:', paymentsError)
+      } else {
+        // Convert the database payments to your Payment type
+        const convertedPayments: Payment[] = (userPayments || []).map(payment => ({
+          ...payment,
+          // Cast the status to your custom type if it matches
+          status: (payment.status as 'pending' | 'completed' | 'failed') || 'pending'
+        }))
+        setPayments(convertedPayments)
+      }
+    } else {
+      setPayments([])
+    }
+
+    // 4. Item requests
+    let userRequests: Request[] = []
+    try {
+      const { data: requestsData, error: requestsError } = await supabase
+        .from('item_requests')
+        .select('*')
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
-      
-      if (!paymentsError) {
-        setPayments(userPayments || [])
-      }
 
-      // Load item requests - handle if table doesn't exist
-      let userRequests = []
-      try {
-        const { data: requestsData, error: requestsError } = await supabase
-          .from('item_requests')
-          .select('*')
-          .eq('user_id', userId)
-          .order('created_at', { ascending: false })
+      if (!requestsError) {
+        userRequests = requestsData || []
+      }
+    } catch (err) {
+      console.log('item_requests table not ready yet')
+    }
+    setRequests(userRequests)
+// 5. Messages - Get recent messages from user's threads
+let userMessages: Message[] = []
+try {
+  // First, get threads where user is a participant
+  const { data: userThreads, error: threadsError } = await supabase
+    .from('chat_thread_participants')
+    .select('thread_id')
+    .eq('user_id', userId)
+
+  if (!threadsError && userThreads && userThreads.length > 0) {
+    const threadIds = userThreads.map(t => t.thread_id).filter(Boolean)
+    
+    // Get recent messages from these threads
+    const { data: messagesData, error: messagesError } = await supabase
+      .from('messages')
+      .select('id, sender_id, thread_id, content, created_at, read_by')
+      .in('thread_id', threadIds)
+      .order('created_at', { ascending: false })
+      .limit(10)
+
+    if (!messagesError && messagesData) {
+      // Transform the messages
+      userMessages = messagesData.map(msg => {
+        const readByArray = msg.read_by || []
+        const isRead = readByArray.includes(userId)
         
-        if (!requestsError) {
-          userRequests = requestsData || []
-          setRequests(userRequests)
+        return {
+          id: msg.id,
+          sender_id: msg.sender_id,
+          receiver_id: '', // For now, we'll leave this empty
+          content: msg.content,
+          read: isRead,
+          created_at: msg.created_at || new Date().toISOString()
         }
-      } catch (error) {
-        console.log('Item requests table might not exist yet')
-        setRequests([])
-      }
-
-      // Load messages (if messages table exists)
-      let userMessages = []
-      try {
-        const { data: messagesData, error: messagesError } = await supabase
-          .from('messages')
-          .select('*')
-          .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
-          .eq('read', false)
-          .order('created_at', { ascending: false })
-        
-        if (!messagesError) {
-          userMessages = messagesData || []
-          setMessages(userMessages)
-        }
-      } catch (error) {
-        console.log('Messages table might not exist yet')
-        setMessages([])
-      }
-
-      // Calculate stats
-      const activeListings = userProducts?.filter(p => p.status === 'active').length || 0
-      const completedOrders = userOrders?.filter(o => o.status === 'completed').length || 0
-      const pendingOrders = userOrders?.filter(o => o.status === 'pending').length || 0
-      const totalEarnings = userPayments
-        ?.filter(p => p.status === 'completed')
-        .reduce((sum, p) => sum + (p.amount || 0), 0) || 0
-      const totalRequests = userRequests.length || 0
-      const activeRequests = userRequests.filter(r => r.status === 'active' || r.status === 'pending').length || 0
-
-      setStats({
-        activeListings,
-        totalEarnings,
-        unreadMessages: userMessages.length || 0,
-        profileViews: profile?.views || 0,
-        pendingOrders,
-        completedOrders,
-        totalRequests,
-        activeRequests
       })
-
-      // Build recent activity from real data
-      const activityData = [
-        // Recent orders
-        ...(userOrders?.slice(0, 3).map(order => ({
-          type: 'order',
-          icon: ShoppingCart,
-          color: 'bg-blue-100 text-blue-600',
-          title: order.type === 'buy' ? 'Purchase Made' : 'Sale Made',
-          description: order.product?.title || 'Item',
-          time: new Date(order.created_at).toLocaleDateString(),
-          status: order.status,
-          action: () => router.push(`/dashboard/orders/${order.id}`)
-        })) || []),
-        
-        // Recent listings views
-        ...(userProducts?.slice(0, 2).filter(l => l.view_count > 0).map(listing => ({
-          type: 'listing',
-          icon: Package,
-          color: 'bg-green-100 text-green-600',
-          title: 'Listing Viewed',
-          description: `${listing.title} - ${listing.view_count || 0} views`,
-          time: 'Recently',
-          status: 'viewed',
-          action: () => router.push(`/listings/${listing.id}`)
-        })) || []),
-        
-        // Recent requests
-        ...(userRequests?.slice(0, 2).map(request => ({
-          type: 'request',
-          icon: Target,
-          color: 'bg-purple-100 text-purple-600',
-          title: 'Item Request ' + (request.status === 'matched' ? 'Matched' : 'Submitted'),
-          description: request.title,
-          time: new Date(request.created_at).toLocaleDateString(),
-          status: request.status,
-          action: () => router.push(`/dashboard/requests/${request.id}`)
-        })) || [])
-      ]
-
-      setRecentActivity(activityData)
-
-    } catch (error) {
-      console.error('Error loading user data:', error)
+      setMessages(userMessages)
     }
   }
+} catch (err) {
+  console.log('messages error:', err)
+}
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    router.push('/signin')
+    // Calculate stats
+    const activeListings = (userProducts || []).filter(p => p.status === 'active').length
+    const completedOrders = ordersWithDetails.filter(o => o.status === 'completed').length
+    const pendingOrders = ordersWithDetails.filter(o => o.status === 'pending').length
+    const totalEarnings = (payments || [])
+      .filter(p => p.status === 'completed')
+      .reduce((sum, p) => sum + (p.amount || 0), 0)
+    const totalRequests = userRequests.length
+    const activeRequests = userRequests.filter(r => r.status === 'active' || r.status === 'pending').length
+
+    // Get unread messages count from chat threads
+    let unreadCount = 0
+    try {
+      // Get threads where user is a participant
+      const { data: threads } = await supabase
+        .from('chat_thread_participants')
+        .select('thread_id')
+        .eq('user_id', userId)
+
+      if (threads && threads.length > 0) {
+        const threadIds = threads
+          .map(t => t.thread_id)
+          .filter((id): id is string => !!id) // Type guard to ensure strings
+        
+        // Get unread messages in these threads
+        const { count, error } = await supabase
+          .from('messages')
+          .select('id', { count: 'exact', head: true })
+          .in('thread_id', threadIds)
+          .not('read_by', 'cs', `{${userId}}`)
+
+        if (!error && count) unreadCount = count
+      }
+    } catch (err) {
+      console.log('unread count error:', err)
+    }
+
+    setStats({
+      activeListings,
+      totalEarnings,
+      unreadMessages: unreadCount,
+      profileViews: profile?.views || 0,
+      pendingOrders,
+      completedOrders,
+      totalRequests,
+      activeRequests
+    })
+
+    // Build recent activity from real data
+    const activityData: Activity[] = [
+      // Recent orders
+      ...(ordersWithDetails.slice(0, 3).map((order: any) => ({
+        type: 'order',
+        icon: ShoppingCart,
+        color: 'bg-blue-100 text-blue-600',
+        title: order.buyer_id === userId ? 'Purchase Made' : 'Sale Made',
+        description: order.product?.title || 'Item',
+        time: new Date(order.created_at).toLocaleDateString(),
+        status: order.status || 'pending',
+        action: () => router.push(`/dashboard/orders/${order.id}`)
+      }))),
+      
+      // Recent listings
+      ...((userProducts || []).slice(0, 2).map((listing: any) => ({
+        type: 'listing',
+        icon: Package,
+        color: 'bg-green-100 text-green-600',
+        title: 'Listing Created',
+        description: listing.title,
+        time: new Date(listing.created_at).toLocaleDateString(),
+        status: listing.status || 'draft',
+        action: () => router.push(`/listings/${listing.id}`)
+      })) || []),
+      
+      // Recent requests
+      ...(userRequests.slice(0, 2).map((request: Request) => ({
+        type: 'request',
+        icon: Target,
+        color: 'bg-purple-100 text-purple-600',
+        title: 'Item Request ' + (request.status === 'matched' ? 'Matched' : 'Submitted'),
+        description: request.title,
+        time: new Date(request.created_at || '').toLocaleDateString(),
+        status: request.status || 'pending',
+        action: () => router.push(`/dashboard/requests/${request.id}`)
+      })))
+    ]
+
+    setRecentActivity(activityData)
+
+  } catch (error) {
+    console.error('Error loading user data:', error)
   }
-
+}
   const toggleSidebar = () => {
     if (window.innerWidth < 1024) {
       setMobileSidebarOpen(!mobileSidebarOpen)
@@ -280,10 +425,9 @@ export default function Dashboard() {
       try {
         await supabase.from('products').delete().eq('id', listingId)
         setListings(listings.filter(l => l.id !== listingId))
-        // Update stats
         setStats(prev => ({
           ...prev,
-          activeListings: prev.activeListings - 1
+          activeListings: Math.max(0, prev.activeListings - 1)
         }))
       } catch (error) {
         console.error('Error deleting listing:', error)
@@ -293,33 +437,36 @@ export default function Dashboard() {
 
   const handleUpdateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
+      const updateData: Database['public']['Tables']['orders']['Update'] = {
+        status: newStatus,
+        updated_at: new Date().toISOString()
+      }
+      
       await supabase
         .from('orders')
-        .update({ status: newStatus })
+        .update(updateData)
         .eq('id', orderId)
 
-      // Update local state
       setOrders(orders.map(order => 
-        order.id === orderId ? { ...order, status: newStatus } : order
+        order.id === orderId ? { 
+          ...order, 
+          ...updateData
+        } : order
       ))
     } catch (error) {
       console.error('Error updating order:', error)
     }
   }
 
-  // Calculate dynamic stats for cards
-  const calculateCardStats = () => {
-    // Calculate listing trends
+  const calculateCardStats = (): StatCard[] => {
     const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
     const recentListings = listings.filter(l => new Date(l.created_at) > oneWeekAgo).length
     
-    // Calculate payment trends
     const oneMonthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
     const recentPayments = payments.filter(p => new Date(p.created_at) > oneMonthAgo)
-    const recentEarnings = recentPayments.reduce((sum, p) => sum + (p.amount || 0), 0)
+    const recentEarnings = recentPayments.reduce((sum: number, p: Payment) => sum + (p.amount || 0), 0)
 
-    // Calculate profile view trends
-    const recentViews = 0 // You'll need to implement view tracking
+    const recentViews = 0
 
     return [
       { 
@@ -398,27 +545,23 @@ export default function Dashboard() {
     { id: 'settings', label: 'Settings', icon: Settings, badge: null },
   ]
 
-  // Filter listings based on search
   const filteredListings = listings.filter(listing => 
     searchQuery === '' || 
     listing.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    listing.description.toLowerCase().includes(searchQuery.toLowerCase())
+    listing.description?.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
-  // Filter orders based on active tab
   const filteredOrders = orders.filter(order => 
     activeTab === 'orders' ? true : order.status === (activeTab === 'pending' ? 'pending' : 'completed')
   )
 
   return (
     <>
-      {/* Mobile Sidebar Overlay */}
       {mobileSidebarOpen && (
         <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setMobileSidebarOpen(false)} />
       )}
 
       <div className="flex h-screen bg-gray-50">
-        {/* Desktop Sidebar */}
         <aside className={`hidden lg:flex flex-col ${sidebarOpen ? 'w-72' : 'w-20'} bg-white border-r border-gray-200 transition-all duration-300 z-30`}>
           <div className="p-6 border-b">
             <div className="flex items-center space-x-3">
@@ -486,7 +629,6 @@ export default function Dashboard() {
               ))}
             </ul>
             
-            {/* Add New Item Buttons */}
             {sidebarOpen && (
               <div className="mt-8 space-y-3">
                 <Link
@@ -518,7 +660,7 @@ export default function Dashboard() {
           </div>
         </aside>
 
-        {/* Mobile Sidebar */}
+
         <aside className={`lg:hidden fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-xl transform ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform`}>
           <div className="p-6 border-b flex justify-between items-center">
             <div className="flex items-center space-x-3">
@@ -609,7 +751,6 @@ export default function Dashboard() {
           </div>
         </aside>
 
-        {/* Main Content */}
         <div className="flex-1 flex flex-col overflow-hidden">
           <header className="bg-white border-b px-6 py-4 sticky top-0 z-20">
             <div className="flex justify-between items-center">
@@ -646,7 +787,6 @@ export default function Dashboard() {
           </header>
 
           <main className="flex-1 p-6 overflow-auto">
-            {/* Welcome Section */}
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-gray-900">
                 Welcome back, {user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'Pilot'}! 👋
@@ -658,7 +798,6 @@ export default function Dashboard() {
               </p>
             </div>
 
-            {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
               {statsCards.map((stat, index) => (
                 <div key={index} className="bg-white p-5 rounded-xl shadow-sm border hover:shadow-md transition">
@@ -681,11 +820,8 @@ export default function Dashboard() {
               ))}
             </div>
 
-            {/* Main Content Area */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Left Column - 2/3 width */}
               <div className="lg:col-span-2 space-y-6">
-                {/* Tab Navigation */}
                 <div className="bg-white rounded-xl shadow-sm border">
                   <div className="border-b">
                     <div className="flex space-x-1 p-4">
@@ -705,11 +841,9 @@ export default function Dashboard() {
                     </div>
                   </div>
 
-                  {/* Tab Content */}
                   <div className="p-6">
                     {activeTab === 'overview' && (
                       <div className="space-y-6">
-                        {/* Recent Activity */}
                         <div>
                           <div className="flex justify-between items-center mb-4">
                             <h3 className="text-lg font-semibold">Recent Activity</h3>
@@ -762,7 +896,6 @@ export default function Dashboard() {
                           </div>
                         </div>
 
-                        {/* Quick Stats */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl">
                             <div className="flex items-center justify-between mb-4">
@@ -813,9 +946,9 @@ export default function Dashboard() {
                               <div key={listing.id} className="border rounded-xl p-4 hover:shadow-md transition">
                                 <div className="flex items-start justify-between">
                                   <div className="flex items-start space-x-4">
-                                    {listing.image_url ? (
+                                    {listing.images && listing.images.length > 0 ? (
                                       <img
-                                        src={listing.image_url}
+                                        src={Array.isArray(listing.images) ? listing.images[0] : listing.images}
                                         alt={listing.title}
                                         className="w-16 h-16 rounded-lg object-cover"
                                       />
@@ -925,9 +1058,9 @@ export default function Dashboard() {
                                 
                                 <div className="flex items-center justify-between border-t pt-4">
                                   <div className="flex items-center space-x-3">
-                                    {order.product?.image_url ? (
+                                    {order.product?.images && order.product.images.length > 0 ? (
                                       <img
-                                        src={order.product.image_url}
+                                        src={Array.isArray(order.product.images) ? order.product.images[0] : order.product.images}
                                         alt={order.product.title}
                                         className="w-10 h-10 rounded-lg object-cover"
                                       />
@@ -971,13 +1104,14 @@ export default function Dashboard() {
                             <ShoppingCart className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                             <h4 className="text-lg font-semibold mb-2">No orders yet</h4>
                             <p className="text-gray-500 mb-6">
-                              {activeTab === 'pending' 
+                              {activeTab as string === 'pending'
                                 ? 'No pending orders at the moment'
-                                : activeTab === 'completed'
+                                : activeTab as string === 'completed'
                                 ? 'No completed orders yet'
                                 : 'You haven\'t made or received any orders'}
                             </p>
-                            {activeTab !== 'orders' && (
+                            {/* Show "View All Orders" button only when we're in a filtered view */}
+                            {(activeTab as string === 'pending' || activeTab as string === 'completed') && (
                               <button
                                 onClick={() => setActiveTab('orders')}
                                 className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
@@ -1029,7 +1163,7 @@ export default function Dashboard() {
                                   </div>
                                   <div className="text-right">
                                     <p className="text-sm text-gray-500">
-                                      {new Date(request.created_at).toLocaleDateString()}
+                                      {new Date(request.created_at || '').toLocaleDateString()}
                                     </p>
                                     <span className={`px-2 py-1 text-xs rounded-full mt-2 ${
                                       request.urgency === 'urgent' ? 'bg-red-100 text-red-800' :
@@ -1066,9 +1200,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {/* Right Column - 1/3 width */}
               <div className="space-y-6">
-                {/* Quick Actions */}
                 <div className="bg-white rounded-xl shadow-sm border p-6">
                   <h3 className="font-semibold mb-4">Quick Actions</h3>
                   <div className="grid grid-cols-2 gap-3">
@@ -1103,7 +1235,6 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                {/* Recent Messages */}
                 <div className="bg-white rounded-xl shadow-sm border p-6">
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="font-semibold">Recent Messages</h3>
@@ -1136,7 +1267,6 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                {/* Tips & Updates */}
                 <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl p-6 text-white">
                   <div className="flex items-center space-x-3 mb-4">
                     <Zap className="w-6 h-6" />
@@ -1155,7 +1285,6 @@ export default function Dashboard() {
                   </Link>
                 </div>
 
-                {/* Support Status */}
                 <div className="bg-white rounded-xl shadow-sm border p-6">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="font-semibold">Account Status</h3>

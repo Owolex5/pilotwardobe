@@ -192,39 +192,39 @@ export default function AdminDashboard() {
         .order('created_at', { ascending: false })
       setPayments(allPayments || [])
 
-      // Load item requests
-      const { data: allRequests } = await supabase
-        .from('item_requests')
-        .select('*')
-        .order('created_at', { ascending: false })
-      setRequests(allRequests || [])
+     // Load item requests
+const { data: allRequests } = await supabase
+  .from('item_requests')
+  .select('*')
+  .order('created_at', { ascending: false })
+setRequests(allRequests || [])
 
-      // Calculate stats
-      const activeUsers = allUsers?.filter(u => u.last_sign_in_at > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).length || 0
-      const activeListings = allListings?.filter(l => l.status === 'active').length || 0
-      const pendingListings = allListings?.filter(l => l.status === 'pending').length || 0
-      const pendingOrders = allOrders?.filter(o => o.status === 'pending').length || 0
-      const completedOrders = allOrders?.filter(o => o.status === 'completed').length || 0
-      const revenue = allPayments
-        ?.filter(p => p.status === 'completed')
-        .reduce((sum, p) => sum + (p.amount || 0), 0) || 0
-      const pendingRequests = allRequests?.filter(r => r.status === 'pending').length || 0
+// Calculate stats - FIXED: Use created_at instead of last_sign_in_at
+const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+const activeUsers = allUsers?.filter(u => u.created_at > thirtyDaysAgo).length || 0
+const activeListings = allListings?.filter(l => l.status === 'active').length || 0
+const pendingListings = allListings?.filter(l => l.status === 'pending').length || 0
+const pendingOrders = allOrders?.filter(o => o.status === 'pending').length || 0
+const completedOrders = allOrders?.filter(o => o.status === 'completed').length || 0
+const revenue = allPayments
+  ?.filter(p => p.status === 'completed')
+  .reduce((sum, p) => sum + (p.amount || 0), 0) || 0
+const pendingRequests = allRequests?.filter(r => r.status === 'pending').length || 0
 
-      setStats({
-        totalUsers: allUsers?.length || 0,
-        activeUsers,
-        totalListings: allListings?.length || 0,
-        activeListings,
-        pendingListings,
-        totalOrders: allOrders?.length || 0,
-        pendingOrders,
-        completedOrders,
-        revenue,
-        pendingRequests,
-        pendingReviews: 0, // Add reviews table later
-        reports: 0 // Add reports table later
-      })
-
+setStats({
+  totalUsers: allUsers?.length || 0,
+  activeUsers,
+  totalListings: allListings?.length || 0,
+  activeListings,
+  pendingListings,
+  totalOrders: allOrders?.length || 0,
+  pendingOrders,
+  completedOrders,
+  revenue,
+  pendingRequests,
+  pendingReviews: 0, // Add reviews table later
+  reports: 0 // Add reports table later
+})
     } catch (error) {
       console.error('Error loading admin data:', error)
     }
@@ -354,6 +354,30 @@ export default function AdminDashboard() {
       </div>
     )
   }
+  // Add a helper function to get color based on activity type
+const getActivityColor = (type: string) => {
+  const colorMap = {
+    order: 'bg-blue-100 text-blue-600',
+    listing: 'bg-green-100 text-green-600',
+    user: 'bg-purple-100 text-purple-600',
+    payment: 'bg-yellow-100 text-yellow-600',
+    request: 'bg-red-100 text-red-600',
+    default: 'bg-gray-100 text-gray-600'
+  }
+  return colorMap[type] || colorMap.default
+}
+
+const getActivityIcon = (type: string) => {
+  const iconMap = {
+    order: ShoppingCart,
+    listing: Package,
+    user: user,
+    payment: CreditCard,
+    request: AlertTriangle,
+    default: Bell
+  }
+  return iconMap[type] || iconMap.default
+}
 
   const adminMenuItems = [
     { id: 'overview', label: 'Overview', icon: Home, badge: null },
@@ -705,33 +729,38 @@ export default function AdminDashboard() {
                   <div className="p-4 md:p-6">
                     {recentActivities.length > 0 ? (
                       <div className="space-y-3 md:space-y-4">
-                        {recentActivities.map((activity, index) => (
-                          <div
-                            key={index}
-                            className="flex flex-col md:flex-row md:items-center justify-between p-3 md:p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition"
-                            onClick={activity.action}
-                          >
-                            <div className="flex items-center space-x-3 md:space-x-4 mb-2 md:mb-0">
-                              <div className={`w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center ${activity.color}`}>
-                                <activity.icon className="w-4 h-4 md:w-5 md:h-5" />
-                              </div>
-                              <div>
-                                <p className="font-medium text-sm md:text-base">{activity.title}</p>
-                                <p className="text-xs md:text-sm text-gray-500">{activity.description}</p>
-                              </div>
-                            </div>
-                            <div className="flex justify-between md:flex-col md:text-right">
-                              <p className="text-xs text-gray-500">{activity.time}</p>
-                              <span className={`inline-block px-2 py-1 text-xs rounded-full ${
-                                activity.priority === 'high' ? 'bg-red-100 text-red-800' :
-                                'bg-yellow-100 text-yellow-800'
-                              }`}>
-                                {activity.priority} priority
-                              </span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+  {recentActivities.map((activity, index) => {
+    const ActivityIcon = getActivityIcon(activity.type)
+    const activityColor = getActivityColor(activity.type)
+    
+    return (
+      <div
+        key={index}
+        className="flex flex-col md:flex-row md:items-center justify-between p-3 md:p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition"
+        onClick={activity.action}
+      >
+        <div className="flex items-center space-x-3 md:space-x-4 mb-2 md:mb-0">
+          <div className={`w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center ${activityColor}`}>
+            <ActivityIcon className="w-4 h-4 md:w-5 md:h-5" />
+          </div>
+          <div>
+            <p className="font-medium text-sm md:text-base">{activity.title}</p>
+            <p className="text-xs md:text-sm text-gray-500">{activity.description}</p>
+          </div>
+        </div>
+        <div className="flex justify-between md:flex-col md:text-right">
+          <p className="text-xs text-gray-500">{activity.time}</p>
+          <span className={`inline-block px-2 py-1 text-xs rounded-full ${
+            activity.priority === 'high' ? 'bg-red-100 text-red-800' :
+            'bg-yellow-100 text-yellow-800'
+          }`}>
+            {activity.priority} priority
+          </span>
+        </div>
+      </div>
+    )
+  })}
+</div>
                     ) : (
                       <div className="text-center py-6 md:py-8">
                         <CheckCircle className="w-10 h-10 md:w-12 md:h-12 text-gray-400 mx-auto mb-3 md:mb-4" />

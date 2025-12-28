@@ -32,42 +32,36 @@ const AnalyticsDashboard = () => {
   useEffect(() => {
     loadAnalytics()
   }, [timeRange])
+const loadAnalytics = async () => {
+  try {
+    const days = timeRange === '7d' ? 7 : 30
 
-  const loadAnalytics = async () => {
-    try {
-      // User growth data
-      const { data: userGrowth } = await supabase
-        .rpc('get_user_growth', { days: timeRange === '7d' ? 7 : 30 })
+    // Call RPC directly via REST API
+    const userGrowth = await callRPC('get_user_growth', { days })
+    const revenueTrend = await callRPC('get_revenue_trend', { days })
 
-      // Revenue trend
-      const { data: revenueTrend } = await supabase
-        .rpc('get_revenue_trend', { days: timeRange === '7d' ? 7 : 30 })
 
-      // Category distribution
-      const { data: categoryData } = await supabase
-        .from('products')
-        .select('category, count')
-        .group('category')
-
-      // Listing status
-      const { data: statusData } = await supabase
-        .from('products')
-        .select('status, count')
-        .group('status')
-
-      setAnalytics({
-        userGrowth: userGrowth || [],
-        revenueTrend: revenueTrend || [],
-        categoryDistribution: categoryData?.map(c => ({ name: c.category, value: c.count })) || [],
-        listingStatus: statusData?.map(s => ({ name: s.status, value: s.count })) || [],
-        topProducts: []
-      })
-
-    } catch (error) {
-      console.error('Error loading analytics:', error)
-    }
+  } catch (error) {
+    console.error('Error loading analytics:', error)
   }
-
+}
+const callRPC = async (functionName: string, params: any) => {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/rpc/${functionName}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!}`
+    },
+    body: JSON.stringify(params)
+  })
+  
+  if (!response.ok) {
+    throw new Error(`RPC call failed: ${response.statusText}`)
+  }
+  
+  return response.json()
+}
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8']
 
   return (

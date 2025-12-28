@@ -49,25 +49,58 @@ const RequestItem = () => {
 
     const { data: { user } } = await supabase.auth.getUser();
 
-    const { error } = await supabase
-      .from("item_requests")
-      .insert([
-        {
-          user_id: user?.id,
-          description,
-          category,
-          condition,
-          budget: budget ? parseFloat(budget) : null,
-          email: email || user?.email,
-        },
-      ]);
-
-    if (error) {
-      setError(error.message);
-    } else {
-      setSuccess(true);
+    // Get user profile for name
+    let userName = user?.user_metadata?.full_name || 'User';
+    let userEmail = user?.email || email;
+    
+    if (user?.id) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name, email')
+        .eq('id', user.id)
+        .single();
+      
+      if (profile) {
+        userName = profile.full_name || userName;
+        userEmail = profile.email || userEmail;
+      }
     }
-    setLoading(false);
+
+    try {
+      const { error: submitError } = await supabase
+        .from("item_requests")
+        .insert([
+          {
+            // Required fields from schema
+            category: category || 'Other',
+            item_type: 'item',
+            title: description.substring(0, 100) || 'Item Request',
+            urgency: 'medium',
+            user_email: userEmail || '',
+            user_name: userName,
+            user_id: user?.id || null,
+            
+            // Optional fields
+            description: description || null,
+            budget_min: budget ? parseFloat(budget) : null,
+            budget_max: budget ? parseFloat(budget) : null,
+            accept_similar_items: true,
+            status: 'pending',
+          },
+        ]);
+
+      if (submitError) {
+        setError(submitError.message || 'Failed to submit request');
+        console.error('Insert error:', submitError);
+      } else {
+        setSuccess(true);
+      }
+    } catch (err: any) {
+      setError(err.message || 'An unexpected error occurred');
+      console.error('Error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -223,4 +256,4 @@ const RequestItem = () => {
   );
 };
 
-export default RequestItem; // ← Only one export!
+export default RequestItem;

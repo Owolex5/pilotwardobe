@@ -223,22 +223,21 @@ export default function AdminListingsPage() {
   }
 
   const getStatusBadge = (status: string) => {
-    const statusColors = {
-      active: 'bg-green-100 text-green-800',
-      pending: 'bg-yellow-100 text-yellow-800',
-      rejected: 'bg-red-100 text-red-800',
-      expired: 'bg-gray-100 text-gray-800',
-      sold: 'bg-blue-100 text-blue-800'
-    }
-
-    return statusColors[status] || 'bg-gray-100 text-gray-800'
+  const statusColors = {
+    active: 'bg-green-100 text-green-800',
+    pending: 'bg-yellow-100 text-yellow-800',
+    rejected: 'bg-red-100 text-red-800',
+    expired: 'bg-gray-100 text-gray-800',
+    sold: 'bg-blue-100 text-blue-800'
   }
 
-  const getCategories = () => {
-    const categories = [...new Set(listings.map(l => l.category).filter(Boolean))]
-    return ['all', ...categories]
-  }
+  return statusColors[status] || 'bg-gray-100 text-gray-800'
+}
 
+const getCategories = () => {
+  const categories = Array.from(new Set(listings.map(l => l.category).filter(Boolean)))
+  return ['all', ...categories]
+}
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
