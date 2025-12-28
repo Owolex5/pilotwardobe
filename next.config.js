@@ -2,10 +2,7 @@
 const nextConfig = {
   async rewrites() {
     return [
-      {
-        source: '/home',
-        destination: '/home.html',
-      },
+      // Only keep non-homepage rewrites
       {
         source: '/terms',
         destination: '/terms.html',
