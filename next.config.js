@@ -2,7 +2,11 @@
 const nextConfig = {
   async rewrites() {
     return [
-      // Only keep non-homepage rewrites
+      // If you want to keep a clean URL for the static page
+      {
+        source: '/legacy-home',
+        destination: '/landing.html', // or whatever you rename it to
+      },
       {
         source: '/terms',
         destination: '/terms.html',
