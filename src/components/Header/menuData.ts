@@ -5,7 +5,7 @@ export const menuData: Menu[] = [
     id: 1,
     title: "Home",
     newTab: false,
-    path: "/legacy-home",
+    path: "/landing.html",
   },
   {
     id: 2,
