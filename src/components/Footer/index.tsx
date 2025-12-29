@@ -66,7 +66,7 @@ const Footer = () => {
             <h2 className="mb-7.5 text-xl font-semibold">My Account</h2>
             <ul className="space-y-3.5">
           
-              <li><Link href="/dashboard/orders" className="hover:text-blue transition">My Orders</Link></li>
+              {/* <li><Link href="/dashboard/orders" className="hover:text-blue transition">My Listings</Link></li> */}
               <li><Link href="/wishlist" className="hover:text-blue transition">Wishlist</Link></li>
               <li><Link href="/cart" className="hover:text-blue transition">Cart</Link></li>
               <li><Link href="/signin" className="hover:text-blue transition">Sign In</Link></li>
@@ -80,7 +80,7 @@ const Footer = () => {
             <ul className="space-y-3">
               <li><Link href="/shop-without-sidebar" className="hover:text-blue transition">Shop All</Link></li>
            
-              <li><Link href="/faq" className="hover:text-blue transition">FAQ</Link></li>
+            
               <li><Link href="/contact" className="hover:text-blue transition">Contact Us</Link></li>
               <li><Link href="/about" className="hover:text-blue transition">About Us</Link></li>
             </ul>
