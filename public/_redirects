@@ -1,0 +1,22 @@
+[[redirects]]
+  from = "/"
+  to = "/landing.html"
+  status = 200
+
+[[redirects]]
+  from = "/terms"
+  to = "/terms.html"
+  status = 200
+
+[[redirects]]
+  from = "/privacy"
+  to = "/privacy.html"
+  status = 200
+
+[[redirects]]
+  from = "/customer-business-agreement"
+  to = "/customer-business-agreement.html"
+  status = 200
+
+# Optional: catch-all for 404s (if you want to redirect unknown paths)
+
