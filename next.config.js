@@ -2,22 +2,21 @@
 const nextConfig = {
   async rewrites() {
     return [
-      // If you want to keep a clean URL for the static page
       {
-        source: '/legacy-home',
-        destination: '/landing.html', // or whatever you rename it to
+        source: '/',           // root URL
+        destination: '/landing.html',  // serve this file, URL stays '/'
       },
       {
         source: '/terms',
         destination: '/terms.html',
       },
       {
-        source: '/customer-business-agreement',
-        destination: '/customer-business-agreement.html',
-      },
-      {
         source: '/privacy',
         destination: '/privacy.html',
+      },
+      {
+        source: '/customer-business-agreement',
+        destination: '/customer-business-agreement.html',
       },
     ];
   },

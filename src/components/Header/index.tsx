@@ -63,7 +63,7 @@ const Header = () => {
         >
           {/* <!-- header top left --> */}
           <div className="xl:w-auto flex-col sm:flex-row w-full flex sm:justify-between sm:items-center gap-5 sm:gap-10">
-            <Link className="flex-shrink-0" href="/">
+            <Link className="flex-shrink-0" href="/marketplace">
               <Image
                 src="/images/logo/logo.png" // Update this with your actual logo
                 alt="PilotWardrobe Logo"

@@ -610,7 +610,7 @@ const SellYourGear = () => {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-8 justify-center">
                   <a
-                    href="/"
+                    href="/marketplace"
                     className="px-16 py-7 bg-blue text-white font-bold text-2xl rounded-3xl hover:bg-blue-dark transition shadow-2xl"
                   >
                     Browse Marketplace →
