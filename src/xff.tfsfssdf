@@ -1,0 +1,40 @@
+// // src/middleware.ts
+// import { NextResponse } from 'next/server';
+// import type { NextRequest } from 'next/server';
+
+// export function middleware(request: NextRequest) {
+//   // Check if the user is trying to access protected pages
+//   const protectedPaths = [
+//     '/pilot-verification',
+//     '/dashboard',
+//     '/account',
+//     '/profile',
+//   ];
+
+//   const isProtectedPath = protectedPaths.some(path => 
+//     request.nextUrl.pathname.startsWith(path)
+//   );
+
+//   if (isProtectedPath) {
+//     // Check for our auth token cookie
+//     const authToken = request.cookies.get('pilotwardrobe-auth-token');
+    
+//     if (!authToken) {
+//       // No token found, redirect to signin
+//       const signinUrl = new URL('/signin', request.url);
+//       signinUrl.searchParams.set('redirect', request.nextUrl.pathname);
+//       return NextResponse.redirect(signinUrl);
+//     }
+//   }
+  
+//   return NextResponse.next();
+// }
+
+// export const config = {
+//   matcher: [
+//     '/pilot-verification/:path*',
+//     '/dashboard/:path*',
+//     '/account/:path*',
+//     '/profile/:path*',
+//   ],
+// };

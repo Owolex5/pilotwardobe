@@ -142,7 +142,7 @@ const Header = () => {
 
               <div>
                 <span className="block text-2xs text-dark-4 uppercase">Pilot Support</span>
-                <p className="font-medium text-custom-sm text-dark">+1(682) 240 -2356</p>
+                <p className="font-medium text-custom-sm text-dark">+234 907 793 7546</p>
               </div>
             </div>
 
@@ -219,18 +219,18 @@ const Header = () => {
                       />
                     </svg>
 
-                    <span className="flex items-center justify-center font-medium text-2xs absolute -right-2 -top-2.5 bg-blue w-4.5 h-4.5 rounded-full text-white">
-                      {product.length}
-                    </span>
+<span className="flex items-center justify-center font-medium text-2xs absolute -right-2 -top-2.5 bg-blue w-4.5 h-4.5 rounded-full text-white">
+  {product?.length || 0}
+</span>
                   </span>
 
                   <div>
                     <span className="block text-2xs text-dark-4 uppercase">
                       cart
                     </span>
-                    <p className="font-medium text-custom-sm text-dark">
+                    {/* <p className="font-medium text-custom-sm text-dark">
                       ${totalPrice}
-                    </p>
+                    </p> */}
                   </div>
                 </button>
               </div>

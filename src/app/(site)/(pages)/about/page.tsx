@@ -31,7 +31,7 @@ export default function AboutPage() {
               
               <h1 className="text-4xl lg:text-6xl font-bold leading-tight mb-6 text-slate-900">
                 Elevate Your Gear. <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
+                <span className="text-black bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
                   Connect the Cockpit.
                 </span>
               </h1>
@@ -43,7 +43,7 @@ export default function AboutPage() {
               <div className="flex flex-wrap gap-4">
                 <Link
                   href="/shop"
-                  className="px-8 py-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition shadow-lg shadow-blue-600/20 flex items-center gap-2"
+                  className="px-8 py-4 bg-blue-600 text-blue font-bold rounded-xl hover:bg-blue-700 transition shadow-lg shadow-blue-600/20 flex items-center gap-2"
                 >
                   Explore Marketplace
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
@@ -65,7 +65,7 @@ export default function AboutPage() {
                 
                 <div className="relative h-full w-full rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white">
                   <Image
-                    src="/images/pward/cockpit-7.webp"
+                    src="/images/pward/atxa.jpeg"
                     alt="Pilot using PilotWardrobe"
                     fill
                     className="object-cover hover:scale-105 transition-transform duration-700"
@@ -124,7 +124,7 @@ export default function AboutPage() {
               
               <div className="prose prose-lg prose-slate text-slate-600 leading-relaxed">
                 <p className="mb-6">
-                  "I founded PilotWardrobe after 15 years in the cockpit, flying everything from regional turboprops to international wide-bodies. I noticed a recurring pattern among my colleagues: we all had premium gear sitting in our closets gathering dust."
+                  "I founded PilotWardrobe after 8 years in the cockpit, flying everything from regional turboprops to international wide-bodies. I noticed a recurring pattern among my colleagues: we all had premium gear sitting in our closets gathering dust."
                 </p>
                 <p className="mb-6">
                   "Pilots invest thousands in headsets, watches, and flight bags, only to upgrade later. I realized there had to be a better way to circulate this high-quality equipment within our community—safely and affordably."
@@ -254,7 +254,7 @@ export default function AboutPage() {
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
         
-        <div className="container mx-auto px-6 relative z-10 text-center max-w-4xl">
+        <div className="container mx-auto px-6 relative z-10 text-blue max-w-4xl">
           <h2 className="text-4xl md:text-5xl font-bold mb-8">
             Ready for Takeoff?
           </h2>
@@ -263,14 +263,14 @@ export default function AboutPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/shop-without-sidebar"
-              className="px-10 py-5 bg-blue-600 text-white font-bold text-lg rounded-2xl hover:bg-blue-500 transition shadow-lg shadow-blue-900/50"
+              href="/"
+              className="px-10 py-5 bg-blue-600 text font-bold text-lg rounded-2xl hover:bg-blue-500 transition shadow-lg shadow-blue-900/50"
             >
               Start Shopping
             </Link>
             <Link
               href="/sell"
-              className="px-10 py-5 bg-white/10 text-white font-bold text-lg rounded-2xl border border-white/10 hover:bg-white/20 transition backdrop-blur-sm"
+              className="px-10 py-5 bg-white/10 text-blue font-bold text-lg rounded-2xl border border-white/10 hover:bg-white/20 transition backdrop-blur-sm"
             >
               List Your Gear
             </Link>

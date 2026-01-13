@@ -548,7 +548,7 @@ const SellYourGear = () => {
                       type="tel"
                       value={contact.phone}
                       onChange={(e) => setContact({ ...contact, phone: e.target.value })}
-                      placeholder="+1 (555) 123-4567"
+                      placeholder="+234 907 793 7546"
                       className="w-full px-6 py-5 text-lg border border-gray-300 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue/30 transition"
                     />
                   </div>

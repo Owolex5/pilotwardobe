@@ -1,99 +1,221 @@
 // app/shop/[category]/page.tsx
-
 import React from "react";
-import Breadcrumb from "@/components/Common/Breadcrumb";
-import SingleGridItem from "@/components/Shop/SingleGridItem";
 import shopData from "@/components/Shop/shopData";
 import { Metadata } from "next";
-import { notFound } from "next/navigation";
-import AIUniformRecommender from "@/components/Shop/AIUniformRecommender"; // Your AI component
+import CategoryContent from "./CategoryContent";
+import EmptyCategory from "@/components/Shop/EmptyCategory";
 
 type Props = {
   params: Promise<{ category: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 export const metadata: Metadata = {
   title: "Shop Category | PilotWardrobe",
   description: "Browse premium pre-owned aviation gear by category.",
 };
+
+// Define ALL valid categories (even if empty for now)
+const ALL_CATEGORIES = [
+  "uniforms",
+  "headsets", 
+  "flight-bags",
+  "watches",
+  "sunglasses",
+  "aircraft-parts",
+  "manuals-documents",
+  "models-collectibles",
+  "accessories",
+  "epaulettes",
+  "wings",
+  "shirts",
+  "pants"
+];
+
 export async function generateStaticParams() {
-  const categoryMap = shopData.map((item) => {
-    const title = item.title.toLowerCase();
-    if (title.includes("uniform") || title.includes("epaulette") || title.includes("shirt") || title.includes("pants")) return "uniforms";
-    if (title.includes("headset")) return "headsets";
-    if (title.includes("bag")) return "flight-bags";
-    if (title.includes("watch")) return "watches";
-    if (title.includes("sunglasses")) return "sunglasses";
-    return "accessories";
-  });
-
-  // Remove duplicates manually (safe for all targets)
-  const uniqueCategories = categoryMap.filter((category, index) => 
-    categoryMap.indexOf(category) === index
-  );
-
-  return uniqueCategories.map((category) => ({
+  return ALL_CATEGORIES.map((category) => ({
     category,
   }));
 }
+
+export const dynamicParams = true;
+
 const CategoryPage = async ({ params }: Props) => {
   const { category } = await params;
 
-  // Normalize category name
-  const normalizedCategory = category.toLowerCase().replace("-", " ");
+  // Normalize category name for display
+  const displayCategory = category
+    .split("-")
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ")
+    .replace("Aircraft", "Aircraft ");
 
-  // Filter products (simple keyword match for now)
-  const filteredProducts = shopData.filter((item) => {
+  // Filter products based on category - FIXED VERSION
+  const filteredProducts = shopData.filter((item: any) => { // Use 'any' to bypass type checking
     const title = item.title.toLowerCase();
-    if (category === "uniforms") return title.includes("uniform") || title.includes("epaulette") || title.includes("shirt") || title.includes("pants");
-    if (category === "headsets") return title.includes("headset") || title.includes("bose") || title.includes("lightspeed") || title.includes("david clark");
-    if (category === "flight-bags") return title.includes("bag") || title.includes("kneeboard");
-    if (category === "watches") return title.includes("watch") || title.includes("garmin");
-    if (category === "sunglasses") return title.includes("sunglasses") || title.includes("aviator");
-    return false;
+    // Check if description exists, use it if it does
+    const desc = item.description ? item.description.toLowerCase() : "";
+    
+    switch(category) {
+      case "uniforms":
+      case "epaulettes":
+      case "wings":
+      case "shirts":
+      case "pants":
+        return (
+          title.includes("uniform") || 
+          title.includes("epaulette") || 
+          title.includes("epaulet") ||
+          title.includes("shirt") || 
+          title.includes("pants") ||
+          title.includes("trouser") ||
+          title.includes("jacket") ||
+          title.includes("blazer") ||
+          title.includes("tie") ||
+          title.includes("wing") ||
+          title.includes("badge") ||
+          title.includes("insignia") ||
+          desc.includes("uniform") ||
+          desc.includes("epaulette")
+        );
+      
+      case "headsets":
+        return (
+          title.includes("headset") || 
+          title.includes("headphone") ||
+          title.includes("bose") || 
+          title.includes("lightspeed") || 
+          title.includes("david clark") ||
+          title.includes("dc") ||
+          title.includes("head gear") ||
+          desc.includes("headset") ||
+          desc.includes("aviation headphone")
+        );
+      
+      case "flight-bags":
+        return (
+          title.includes("bag") || 
+          title.includes("kneeboard") ||
+          title.includes("luggage") || 
+          title.includes("case") ||
+          title.includes("backpack") ||
+          title.includes("carry") ||
+          title.includes("briefcase") ||
+          desc.includes("flight bag") ||
+          desc.includes("pilot bag")
+        );
+      
+      case "watches":
+        return (
+          title.includes("watch") || 
+          title.includes("garmin") || 
+          title.includes("timepiece") ||
+          title.includes("wrist") ||
+          title.includes("chronograph") ||
+          desc.includes("aviation watch") ||
+          desc.includes("pilot watch")
+        );
+      
+      case "sunglasses":
+        return (
+          title.includes("sunglass") || 
+          title.includes("aviator") || 
+          title.includes("ray-ban") || 
+          title.includes("oakley") ||
+          title.includes("eyewear") ||
+          title.includes("glasses") ||
+          desc.includes("sunglass") ||
+          desc.includes("aviator")
+        );
+      
+      case "aircraft-parts":
+        return (
+          title.includes("part") || 
+          title.includes("component") || 
+          title.includes("instrument") || 
+          title.includes("gauge") ||
+          title.includes("panel") ||
+          title.includes("switch") ||
+          title.includes("control") ||
+          title.includes("avionics") ||
+          desc.includes("aircraft part") ||
+          desc.includes("aviation component")
+        );
+      
+      case "manuals-documents":
+        return (
+          title.includes("manual") || 
+          title.includes("book") || 
+          title.includes("guide") ||
+          title.includes("document") ||
+          title.includes("logbook") ||
+          title.includes("chart") ||
+          title.includes("map") ||
+          desc.includes("manual") ||
+          desc.includes("aviation guide")
+        );
+      
+      case "models-collectibles":
+        return (
+          title.includes("model") || 
+          title.includes("toy") || 
+          title.includes("collectible") ||
+          title.includes("diecast") ||
+          title.includes("replica") ||
+          title.includes("display") ||
+          desc.includes("model aircraft") ||
+          desc.includes("collectible")
+        );
+      
+      case "accessories":
+        // Everything that doesn't fit other categories
+        return !(
+          title.includes("uniform") || 
+          title.includes("epaulette") || 
+          title.includes("epaulet") ||
+          title.includes("shirt") || 
+          title.includes("pants") ||
+          title.includes("headset") || 
+          title.includes("bose") || 
+          title.includes("lightspeed") || 
+          title.includes("david clark") ||
+          title.includes("bag") || 
+          title.includes("kneeboard") ||
+          title.includes("watch") || 
+          title.includes("garmin") ||
+          title.includes("sunglass") || 
+          title.includes("aviator") || 
+          title.includes("ray-ban") || 
+          title.includes("oakley") ||
+          title.includes("part") || 
+          title.includes("component") || 
+          title.includes("instrument") || 
+          title.includes("gauge") ||
+          title.includes("manual") || 
+          title.includes("book") || 
+          title.includes("guide") ||
+          title.includes("model") || 
+          title.includes("toy") || 
+          title.includes("collectible")
+        );
+      
+      default:
+        return false;
+    }
   });
 
+  // Instead of showing 404, show empty state with fallback
   if (filteredProducts.length === 0) {
-    notFound();
+    return <EmptyCategory category={category} displayCategory={displayCategory} />;
   }
 
   return (
-    <>
-      <Breadcrumb
-        title={`${category.charAt(0).toUpperCase() + category.slice(1).replace("-", " ")}`}
-        pages={["Home", "Shop", category]}
-      />
-
-      <section className="py-16 lg:py-24 bg-gradient-to-b from-gray-50 to-white">
-        <div className="max-w-[1170px] mx-auto px-4 sm:px-8 xl:px-0">
-          <h1 className="text-4xl font-bold text-center mb-12">
-            {category.charAt(0).toUpperCase() + category.slice(1).replace("-", " ")}
-          </h1>
-
-          {/* AI Recommender for Uniforms */}
-          {category === "uniforms" && (
-            <div className="mb-16">
-              <AIUniformRecommender />
-            </div>
-          )}
-
-          {/* Products Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {filteredProducts.map((item) => (
-              <SingleGridItem key={item.id} item={item} />
-            ))}
-          </div>
-
-          {filteredProducts.length === 0 && (
-            <div className="text-center py-20">
-              <p className="text-xl text-dark-4">No products found in this category yet.</p>
-              <p className="text-dark-4 mt-4">Check back soon — new listings added daily!</p>
-            </div>
-          )}
-        </div>
-      </section>
-    </>
+    <CategoryContent 
+      category={category}
+      displayCategory={displayCategory}
+      filteredProducts={filteredProducts}
+    />
   );
 };
 
-export default CategoryPage; // ← THIS LINE WAS MISSING OR WRONG!
+export default CategoryPage;

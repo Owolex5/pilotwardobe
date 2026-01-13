@@ -25,19 +25,31 @@ const Categories = () => {
   return (
     <section className="py-16 lg:py-20 bg-gray-50">
       <div className="max-w-[1170px] mx-auto px-4 sm:px-8 xl:px-0">
-        <div className="text-center mb-12">
-          <span className="inline-flex items-center gap-3 text-blue font-semibold uppercase tracking-wide mb-3">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#3C50E0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M2 17L12 22L22 17" stroke="#3C50E0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M2 12L12 17L22 12" stroke="#3C50E0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            Categories
-          </span>
-          <h2 className="text-3xl lg:text-5xl font-bold text-dark">
-            Shop by Pilot Essentials
-          </h2>
-        </div>
+       <div className="flex flex-col items-center text-center mb-14">
+  {/* Modern Badge-style Label */}
+  <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue/5 border border-blue/10 mb-4 transition-all hover:bg-blue/10">
+    <span className="relative flex h-2 w-2">
+      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue opacity-75"></span>
+      <span className="relative inline-flex rounded-full h-2 w-2 bg-blue"></span>
+    </span>
+    <span className="text-blue font-bold text-xs uppercase tracking-[0.25em]">
+      Our Flight Deck Collections
+    </span>
+  </div>
+
+  {/* Main Title with high-end typography */}
+  <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-dark tracking-tight leading-tight">
+    Shop  <span className="text-blue">Pilot</span> Essentials
+  </h2>
+
+  {/* Added a subtle subtitle for better UX/SEO */}
+  <p className="mt-4 text-gray-500 max-w-lg text-sm md:text-base leading-relaxed">
+    Gear up with professional-grade uniforms, headsets, and technical tools curated for every stage of your aviation journey.
+  </p>
+  
+  {/* Subtle decorative line */}
+  <div className="mt-6 w-12 h-1 bg-blue rounded-full opacity-20"></div>
+</div>
 
         <div className="relative">
           <Swiper

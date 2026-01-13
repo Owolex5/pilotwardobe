@@ -22,10 +22,10 @@ const PromoBanner = () => {
             </p>
 
             <a
-              href="#"
+              href="/SwapExchange"
               className="inline-flex font-medium text-custom-sm text-white bg-blue py-[11px] px-9.5 rounded-md ease-out duration-200 hover:bg-blue-dark mt-7.5"
             >
-              Buy Now
+              Explore
             </a>
           </div>
 
@@ -63,7 +63,7 @@ const PromoBanner = () => {
 </p>
 
 <a
-  href="#"
+  href="/marketplace"
   className="inline-flex font-medium text-custom-sm text-white bg-teal py-2.5 px-8.5 rounded-md ease-out duration-200 hover:bg-teal-dark mt-9"
 >
   Shop Now
@@ -97,7 +97,7 @@ const PromoBanner = () => {
               </p>
 
               <a
-                href="#"
+                href="/marketplace"
                 className="inline-flex font-medium text-custom-sm text-white bg-orange py-2.5 px-8.5 rounded-md ease-out duration-200 hover:bg-orange-dark mt-7.5"
               >
                 Buy Now

@@ -9,7 +9,7 @@ const data = [
   {
     id: 2,
     title: "Uniforms",
-    img: "/images/pward/Pilot-Uniform-Pants-Falcon-Womens-Charcoal-Gray-WPAA__01565.jpg",
+    img: "/images/pward/Goshawk-womens-regular-black-WORB__33465-removebg-preview.png",
     link: "/shop/uniforms",
   },
   {

@@ -1,6 +1,7 @@
 "use client";
-import Home from "../Home"; // make sure this path is correct
+import ShopWithoutSidebar from "../ShopWithoutSidebar";
+import Home from "../ShopWithoutSidebar"; // make sure this path is correct
 
 export default function Marketplace() {
-  return <Home />;
+  return <ShopWithoutSidebar />;
 }

@@ -132,9 +132,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 <button className="flex-1 py-5 bg-blue text-white font-bold text-xl rounded-2xl hover:bg-blue-dark transition shadow-xl">
                   Add to Cart
                 </button>
-                <button className="flex-1 py-5 border-2 border-blue text-blue font-bold text-xl rounded-2xl hover:bg-blue hover:text-white transition">
+                {/* <button className="flex-1 py-5 border-2 border-blue text-blue font-bold text-xl rounded-2xl hover:bg-blue hover:text-white transition">
                   Contact Seller
-                </button>
+                </button> */}
               </div>
             </div>
           </div>
