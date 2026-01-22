@@ -16,6 +16,8 @@
     "@supabase/auth-helpers-nextjs": "^0.15.0",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.89.0",
+    "@typescript-eslint/eslint-plugin": "^8.53.1",
+    "@typescript-eslint/parser": "^8.53.1",
     "autoprefixer": "10.4.15",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.8.0",
@@ -45,11 +47,11 @@
   },
   "devDependencies": {
     "@opennextjs/cloudflare": "^1.15.0",
-    "@types/node": "20.6.2",
+    "@types/node": "^25.0.10",
     "@types/react": "19.0.12",
     "@types/react-dom": "19.0.4",
     "@types/recharts": "^1.8.29",
-    "eslint": "8.49.0",
+    "eslint": "^9.39.2",
     "eslint-config-next": "15.2.3",
     "typescript": "5.2.2",
     "wrangler": "^4.59.3"

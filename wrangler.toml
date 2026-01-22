@@ -1,0 +1,17 @@
+# wrangler.toml
+$schema = "node_modules/wrangler/config-schema.json"
+name = "pilotwardrobe"
+main = ""
+compatibility_date = "2026-01-22"  # Use today's or a recent date
+compatibility_flags = [ "nodejs_compat" ]  # Important for Supabase/Node APIs
+
+[assets]
+directory = ""$schema = "node_modules/wrangler/config-schema.json"
+name = "pilotwardrobe"
+compatibility_date = "2026-01-22"
+compatibility_flags = [ "nodejs_compat" ]
+
+[site]
+bucket = "./out"  # Next.js static export folder
+entry-point = "workers-site"  # Will be created automatically
+binding = "ASSETS"
