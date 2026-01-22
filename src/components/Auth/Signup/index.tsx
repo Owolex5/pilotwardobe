@@ -23,27 +23,29 @@ const Signup = () => {
   }, []);
 
   const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
+  e.preventDefault();
+  setLoading(true);
+  setError(null);
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { full_name: fullName },
-        emailRedirectTo: `${location.origin}/signin`,
-      },
-    });
+  // Now safe – this only runs in the browser after user clicks submit
+  const redirectUrl = `${window.location.origin}/signin`;
 
-    if (error) {
-      setError(error.message);
-      setLoading(false);
-    } else {
-      setSuccess(true);
-    }
-  };
+  const { error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { full_name: fullName },
+      emailRedirectTo: redirectUrl,
+    },
+  });
 
+  if (error) {
+    setError(error.message);
+  } else {
+    setSuccess(true);
+  }
+  setLoading(false);
+};
   return (
     <section className="min-h-screen overflow-hidden pt-72 pb-36 lg:pt-54 lg:pb-32 bg-gray-2 flex items-center">
       <div className="max-w-[1170px] w-full mx-auto px-4 sm:px-8 xl:px-0">
