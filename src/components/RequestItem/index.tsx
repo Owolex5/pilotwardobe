@@ -220,7 +220,7 @@ const RequestItem = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-xl transition disabled:opacity-70 disabled:cursor-not-allowed"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-blue font-semibold py-4 rounded-xl transition disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                   {loading ? "Submitting Request..." : "Submit Request"}
                 </button>
