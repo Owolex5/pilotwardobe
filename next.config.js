@@ -1,7 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Enable remote image optimization for Unsplash (kept from before)
+  // Cloudflare Pages requires this for proper deployment
+  output: 'standalone', // Creates optimized build files
+  
+  // Image optimization
   images: {
+    // Enable remote image optimization for Unsplash
     remotePatterns: [
       {
         protocol: 'https',
@@ -10,6 +14,9 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
+    // Cloudflare Pages doesn't support Next.js Image Optimization by default
+    // Use Cloudflare Image Optimization or set unoptimized: true
+    unoptimized: true, // Disable Next.js image optimization
   },
 
   // URL redirects (301 permanent - good for SEO)
@@ -66,25 +73,14 @@ const nextConfig = {
         destination: '/shop/sunglasses',
         permanent: true,
       },
-
-      // Aircraft Parts variations
-      // {
-      //   source: '/shop/aircraftparts',
-      //   destination: '/shop/aircraft-parts',
-      //   permanent: true,
-      // },
-      // {
-      //   source: '/shop/airplane-parts',
-      //   destination: '/shop/aircraft-parts',
-      //   permanent: true,
-      // },
-      // {
-      //   source: '/shop/aircraftpart',
-      //   destination: '/shop/aircraft-parts',
-      //   permanent: true,
-      // },
-
     ];
+  },
+  
+  // Optional: Increase timeout for Cloudflare Pages
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
   },
 };
 
