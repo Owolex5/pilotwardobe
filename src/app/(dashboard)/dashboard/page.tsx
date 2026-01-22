@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
@@ -173,6 +173,7 @@ export default function Dashboard() {
   const [messages, setMessages] = useState<Message[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const router = useRouter()
+  const sidebarRef = useRef<HTMLDivElement>(null)
 
   // Define handleSignOut BEFORE the JSX that uses it
   const handleSignOut = async () => {
@@ -193,8 +194,32 @@ export default function Dashboard() {
     }
     checkUser()
 
-    if (window.innerWidth < 1024) setSidebarOpen(false)
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setSidebarOpen(false)
+      } else {
+        setSidebarOpen(true)
+      }
+    }
+
+    handleResize()
+    window.addEventListener('resize', handleResize)
+
+    return () => window.removeEventListener('resize', handleResize)
   }, [router])
+
+  useEffect(() => {
+    // Prevent body scroll when mobile sidebar is open
+    if (mobileSidebarOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'auto'
+    }
+
+    return () => {
+      document.body.style.overflow = 'auto'
+    }
+  }, [mobileSidebarOpen])
 
   const loadUserData = async (userId: string) => {
     try {
@@ -573,7 +598,6 @@ export default function Dashboard() {
     { id: 'payments', label: 'Payments', icon: Wallet, badge: null },
     { id: 'favorites', label: 'Favorites', icon: Heart, badge: null },
     { id: 'profile', label: 'Profile', icon: User, badge: null },
-    // { id: 'settings', label: 'Settings', icon: Settings, badge: null },
     { id: 'aviation-images', label: 'Aviation Images', icon: Camera, badge: null },
   ]
 
@@ -583,7 +607,7 @@ export default function Dashboard() {
     listing.description?.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
-  // Aviation Images Component - MOVE THIS OUTSIDE THE MAIN COMPONENT
+  // Aviation Images Component
   const AviationImagesSection = () => {
     const [aviationImages, setAviationImages] = useState<AviationImage[]>([]);
     const [imageStats, setImageStats] = useState({
@@ -874,7 +898,7 @@ export default function Dashboard() {
     return (
       <div className="space-y-6">
         {/* Image Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <div className="bg-white p-5 rounded-xl shadow-sm border">
             <div className="flex items-center justify-between mb-2">
               <h4 className="font-semibold text-gray-900">Total Images</h4>
@@ -915,22 +939,22 @@ export default function Dashboard() {
         </div>
 
         {/* Action Bar */}
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-2xl font-bold text-gray-900">My Aviation Images</h3>
-          <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <h3 className="text-xl sm:text-2xl font-bold text-gray-900">My Aviation Images</h3>
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <button
               onClick={() => loadAviationImages()}
-              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition flex items-center gap-2"
+              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition flex items-center justify-center gap-2"
             >
               <RefreshCw className="w-4 h-4" />
               Refresh
             </button>
             <button
               onClick={() => setShowUploadModal(true)}
-              className="px-6 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-black rounded-lg hover:from-blue-700 hover:to-blue-800 transition flex items-center gap-2"
+              className="px-4 sm:px-6 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-black rounded-lg hover:from-blue-700 hover:to-blue-800 transition flex items-center justify-center gap-2"
             >
               <Upload className="w-4 h-4" />
-              Upload Image
+              <span>Upload Image</span>
             </button>
           </div>
         </div>
@@ -1055,7 +1079,7 @@ export default function Dashboard() {
             <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
               <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900">Upload Aviation Image</h2>
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Upload Aviation Image</h2>
                   <button
                     onClick={() => setShowUploadModal(false)}
                     className="text-gray-400 hover:text-gray-600"
@@ -1067,7 +1091,7 @@ export default function Dashboard() {
 
                 <div className="space-y-6">
                   {/* File Upload */}
-                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center">
+                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 sm:p-8 text-center">
                     <input
                       type="file"
                       accept="image/*"
@@ -1081,12 +1105,12 @@ export default function Dashboard() {
                           <img
                             src={previewUrl}
                             alt="Preview"
-                            className="max-h-64 mx-auto rounded-lg"
+                            className="max-h-48 sm:max-h-64 mx-auto rounded-lg"
                           />
                         </div>
                       ) : (
-                        <div className="w-16 h-16 mx-auto bg-gradient-to-br from-blue-50 to-blue-100 rounded-full flex items-center justify-center text-blue-600 mb-4">
-                          <Upload className="w-8 h-8" />
+                        <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto bg-gradient-to-br from-blue-50 to-blue-100 rounded-full flex items-center justify-center text-blue-600 mb-4">
+                          <Upload className="w-6 h-6 sm:w-8 sm:h-8" />
                         </div>
                       )}
                       <div className="mb-2">
@@ -1103,7 +1127,7 @@ export default function Dashboard() {
                       <button
                         type="button"
                         onClick={() => document.getElementById('image-upload')?.click()}
-                        className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
+                        className="px-4 sm:px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
                       >
                         {selectedFile ? 'Change File' : 'Choose File'}
                       </button>
@@ -1138,7 +1162,7 @@ export default function Dashboard() {
                       />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-900 mb-2">
                           Price ($) *
@@ -1204,7 +1228,7 @@ export default function Dashboard() {
                     </div>
 
                     {/* Submit Button */}
-                    <div className="flex gap-3 pt-4">
+                    <div className="flex flex-col sm:flex-row gap-3 pt-4">
                       <button
                         type="button"
                         onClick={() => setShowUploadModal(false)}
@@ -1242,7 +1266,7 @@ export default function Dashboard() {
               <div className="p-6">
                 <div className="flex justify-between items-start mb-6">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900">{selectedImage.title}</h2>
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{selectedImage.title}</h2>
                     <p className="text-gray-600">Uploaded on {new Date(selectedImage.created_at).toLocaleDateString()}</p>
                   </div>
                   <button
@@ -1255,16 +1279,16 @@ export default function Dashboard() {
 
                 <div className="grid md:grid-cols-2 gap-8">
                   {/* Image Preview */}
-                  <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl p-8 flex items-center justify-center">
+                  <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl p-4 sm:p-8 flex items-center justify-center">
                     {selectedImage.watermark_url ? (
                       <img
                         src={selectedImage.watermark_url}
                         alt={selectedImage.title}
-                        className="max-w-full max-h-96 rounded-lg"
+                        className="max-w-full max-h-64 sm:max-h-96 rounded-lg"
                       />
                     ) : (
                       <div className="text-center">
-                        <Camera className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                        <Camera className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mx-auto mb-4" />
                         <p className="text-gray-500">Watermarked preview</p>
                       </div>
                     )}
@@ -1277,7 +1301,7 @@ export default function Dashboard() {
                       <p className="text-gray-600">{selectedImage.description}</p>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="bg-gray-50 p-4 rounded-lg">
                         <p className="text-sm text-gray-500">Price</p>
                         <p className="text-2xl font-bold">${selectedImage.price}</p>
@@ -1356,11 +1380,11 @@ export default function Dashboard() {
         return (
           <div className="space-y-6">
             <div>
-              <div className="flex justify-between items-center mb-4">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                 <h3 className="text-lg font-semibold">Recent Activity</h3>
                 <button 
                   onClick={() => loadUserData(user?.id)}
-                  className="text-black-600 hover:text-blue-700 text-sm font-medium"
+                  className="text-black-600 hover:text-blue-700 text-sm font-medium px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition"
                 >
                   Refresh
                 </button>
@@ -1370,10 +1394,10 @@ export default function Dashboard() {
                   recentActivity.map((activity, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition"
+                      className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition"
                       onClick={activity.action}
                     >
-                      <div className="flex items-center space-x-4">
+                      <div className="flex items-start sm:items-center space-x-4 mb-3 sm:mb-0">
                         <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${activity.color}`}>
                           <activity.icon className="w-5 h-5" />
                         </div>
@@ -1382,7 +1406,7 @@ export default function Dashboard() {
                           <p className="text-sm text-gray-500">{activity.description}</p>
                         </div>
                       </div>
-                      <div className="text-right">
+                      <div className="text-left sm:text-right">
                         <p className="text-sm text-gray-500">{activity.time}</p>
                         <span className={`inline-block px-2 py-1 text-xs rounded-full ${
                           activity.status === 'completed' ? 'bg-green-100 text-green-800' :
@@ -1441,11 +1465,11 @@ export default function Dashboard() {
       case 'listings':
         return (
           <div>
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
               <h3 className="text-lg font-semibold">My Listings</h3>
               <Link
                 href="/sell"
-                className="px-4 py-2 bg-blue-600 text-blue rounded-lg hover:bg-blue-700 transition flex items-center space-x-2"
+                className="px-4 py-2 bg-blue-600 text-blue rounded-lg hover:bg-blue-700 transition flex items-center justify-center space-x-2 w-full sm:w-auto"
               >
                 <PlusCircle className="w-4 h-4" />
                 <span>New Listing</span>
@@ -1456,7 +1480,7 @@ export default function Dashboard() {
               <div className="space-y-4">
                 {filteredListings.map((listing) => (
                   <div key={listing.id} className="border rounded-xl p-4 hover:shadow-md transition">
-                    <div className="flex items-start justify-between">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                       <div className="flex items-start space-x-4">
                         {listing.images && listing.images.length > 0 ? (
                           <img
@@ -1516,7 +1540,7 @@ export default function Dashboard() {
                 </p>
                 <Link
                   href="/sell"
-                  className="px-6 py-3 bg-blue-600 text-blue rounded-lg hover:bg-blue-700 transition inline-flex items-center space-x-2"
+                  className="px-6 py-3 bg-blue-600 text-blue rounded-lg hover:bg-blue-700 transition inline-flex items-center justify-center space-x-2 w-full sm:w-auto"
                 >
                   <PlusCircle className="w-5 h-5" />
                   <span>Create Your First Listing</span>
@@ -1529,12 +1553,12 @@ export default function Dashboard() {
       case 'orders':
         return (
           <div>
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
               <h3 className="text-lg font-semibold">Orders & Sales</h3>
-              <div className="flex space-x-2">
+              <div className="flex space-x-2 w-full sm:w-auto">
                 <select 
                   onChange={(e) => setActiveTab(e.target.value)}
-                  className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+                  className="px-4 py-2 border rounded-lg hover:bg-gray-50 w-full sm:w-auto"
                   value={activeTab}
                 >
                   <option value="orders">All Orders</option>
@@ -1548,14 +1572,14 @@ export default function Dashboard() {
               <div className="space-y-4">
                 {filteredOrders.map((order) => (
                   <div key={order.id} className="border rounded-xl p-4 hover:shadow-md transition">
-                    <div className="flex justify-between items-start mb-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                       <div>
                         <div className="font-semibold">Order #{order.id.slice(0, 8)}</div>
                         <div className="text-sm text-gray-500">
                           {new Date(order.created_at).toLocaleDateString()}
                         </div>
                       </div>
-                      <div className="text-right">
+                      <div className="text-left sm:text-right">
                         <div className="font-bold text-lg">${order.total_amount || order.product?.price || '0'}</div>
                         <span className={`px-2 py-1 text-xs rounded-full ${
                           order.status === 'completed' ? 'bg-green-100 text-green-800' :
@@ -1570,7 +1594,7 @@ export default function Dashboard() {
                       </div>
                     </div>
                     
-                    <div className="flex items-center justify-between border-t pt-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-t pt-4 gap-4">
                       <div className="flex items-center space-x-3">
                         {order.product?.images && order.product.images.length > 0 ? (
                           <img
@@ -1596,14 +1620,14 @@ export default function Dashboard() {
                       <div className="flex space-x-2">
                         <button
                           onClick={() => router.push(`/dashboard/orders/${order.id}`)}
-                          className="px-3 py-1 border rounded-lg hover:bg-gray-50 text-sm"
+                          className="px-3 py-1 border rounded-lg hover:bg-gray-50 text-sm w-full sm:w-auto"
                         >
                           Details
                         </button>
                         {order.status === 'pending' && order.seller_id === user?.id && (
                           <button
                             onClick={() => handleUpdateOrderStatus(order.id, 'processing')}
-                            className="px-3 py-1 bg-blue-600 text-blue rounded-lg hover:bg-blue-700 text-sm"
+                            className="px-3 py-1 bg-blue-600 text-blue rounded-lg hover:bg-blue-700 text-sm w-full sm:w-auto"
                           >
                             Process
                           </button>
@@ -1628,7 +1652,7 @@ export default function Dashboard() {
                 {(activeTab as string === 'pending' || activeTab as string === 'completed') && (
                   <button
                     onClick={() => setActiveTab('orders')}
-                    className="px-6 py-3 bg-blue-600 text-blue rounded-lg hover:bg-blue-700 transition"
+                    className="px-6 py-3 bg-blue-600 text-blue rounded-lg hover:bg-blue-700 transition w-full sm:w-auto"
                   >
                     View All Orders
                   </button>
@@ -1641,11 +1665,11 @@ export default function Dashboard() {
       case 'requests':
         return (
           <div>
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
               <h3 className="text-lg font-semibold">Item Requests</h3>
               <Link
                 href="/request-item"
-                className="px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-700 text-blue rounded-lg hover:from-purple-700 hover:to-purple-800 transition flex items-center space-x-2"
+                className="px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-700 text-blue rounded-lg hover:from-purple-700 hover:to-purple-800 transition flex items-center justify-center space-x-2 w-full sm:w-auto"
               >
                 <Target className="w-4 h-4" />
                 <span>New Request</span>
@@ -1656,7 +1680,7 @@ export default function Dashboard() {
               <div className="space-y-4">
                 {requests.map((request) => (
                   <div key={request.id} className="border rounded-xl p-4 hover:shadow-md transition">
-                    <div className="flex justify-between items-start">
+                    <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                       <div>
                         <h4 className="font-semibold">{request.title}</h4>
                         <div className="flex items-center space-x-4 mt-2">
@@ -1676,7 +1700,7 @@ export default function Dashboard() {
                           </p>
                         )}
                       </div>
-                      <div className="text-right">
+                      <div className="text-left sm:text-right">
                         <p className="text-sm text-gray-500">
                           {new Date(request.created_at || '').toLocaleDateString()}
                         </p>
@@ -1702,7 +1726,7 @@ export default function Dashboard() {
                 </p>
                 <Link
                   href="/request-item"
-                  className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-blue rounded-lg hover:opacity-90 transition inline-flex items-center space-x-2"
+                  className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-blue rounded-lg hover:opacity-90 transition inline-flex items-center justify-center space-x-2 w-full sm:w-auto"
                 >
                   <Target className="w-5 h-5" />
                   <span>Request an Item</span>
@@ -1720,7 +1744,7 @@ export default function Dashboard() {
           <div className="space-y-6">
             <h3 className="text-2xl font-bold text-gray-900">Profile Settings</h3>
             <div className="bg-white rounded-xl shadow-sm border p-6">
-              <div className="flex items-center space-x-6 mb-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-6">
                 <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center text-blue text-3xl font-bold">
                   {user?.email?.[0]?.toUpperCase()}
                 </div>
@@ -1733,7 +1757,7 @@ export default function Dashboard() {
                 </div>
               </div>
               
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-900 mb-2">
                     Full Name
@@ -1789,11 +1813,11 @@ export default function Dashboard() {
                 />
               </div>
               
-              <div className="flex justify-end gap-3 mt-6">
-                <button className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+              <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6">
+                <button className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition w-full sm:w-auto">
                   Cancel
                 </button>
-                <button className="px-6 py-3 bg-blue-600 text-blue rounded-lg hover:bg-blue-700 transition">
+                <button className="px-6 py-3 bg-blue-600 text-blue rounded-lg hover:bg-blue-700 transition w-full sm:w-auto">
                   Save Changes
                 </button>
               </div>
@@ -1811,32 +1835,32 @@ export default function Dashboard() {
                 <h4 className="text-lg font-semibold">Notification Preferences</h4>
               </div>
               <div className="p-6 space-y-4">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                   <div>
                     <p className="font-medium">Email Notifications</p>
                     <p className="text-sm text-gray-500">Receive updates about your orders and listings</p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
+                  <label className="relative inline-flex items-center cursor-pointer mt-2 sm:mt-0">
                     <input type="checkbox" className="sr-only peer" defaultChecked />
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                   <div>
                     <p className="font-medium">Push Notifications</p>
                     <p className="text-sm text-gray-500">Get real-time alerts on your device</p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
+                  <label className="relative inline-flex items-center cursor-pointer mt-2 sm:mt-0">
                     <input type="checkbox" className="sr-only peer" defaultChecked />
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
                 </div>
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                   <div>
                     <p className="font-medium">Marketing Emails</p>
                     <p className="text-sm text-gray-500">Receive promotions and newsletters</p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
+                  <label className="relative inline-flex items-center cursor-pointer mt-2 sm:mt-0">
                     <input type="checkbox" className="sr-only peer" />
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                   </label>
@@ -1942,14 +1966,14 @@ export default function Dashboard() {
                 {payments.length > 0 ? (
                   <div className="space-y-4">
                     {payments.map((payment) => (
-                      <div key={payment.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div key={payment.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border rounded-lg gap-2">
                         <div>
                           <p className="font-medium">Payment #{payment.id.slice(0, 8)}</p>
                           <p className="text-sm text-gray-500">
                             {new Date(payment.created_at).toLocaleDateString()}
                           </p>
                         </div>
-                        <div className="text-right">
+                        <div className="text-left sm:text-right">
                           <p className="font-bold text-lg">${payment.amount}</p>
                           <span className={`px-2 py-1 text-xs rounded-full ${
                             payment.status === 'completed' ? 'bg-green-100 text-green-800' :
@@ -1987,7 +2011,7 @@ export default function Dashboard() {
                   <div className="space-y-4">
                     {messages.map((message) => (
                       <div key={message.id} className="flex items-center p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition">
-                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center text-black font-bold mr-4">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center text-black font-bold mr-4">
                           {message.sender_id === user?.id ? 'Y' : 'O'}
                         </div>
                         <div className="flex-1">
@@ -2035,7 +2059,7 @@ export default function Dashboard() {
                   <p className="text-sm text-gray-400 mt-1">Save items you're interested in by clicking the heart icon</p>
                   <Link
                     href="/marketplace"
-                    className="mt-4 inline-block px-6 py-3 bg-blue-600 text-black rounded-lg hover:bg-blue-700 transition"
+                    className="mt-4 inline-block px-6 py-3 bg-blue-600 text-black rounded-lg hover:bg-blue-700 transition w-full sm:w-auto"
                   >
                     Browse Marketplace
                   </Link>
@@ -2045,75 +2069,15 @@ export default function Dashboard() {
           </div>
         );
       
-      case 'analytics':
-        return (
-          <div className="space-y-6">
-            <h3 className="text-2xl font-bold text-gray-900">Analytics</h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white p-6 rounded-xl shadow-sm border">
-                <h4 className="font-semibold mb-4">Performance Overview</h4>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Listings Views</span>
-                    <span className="font-semibold">{stats.profileViews}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Conversion Rate</span>
-                    <span className="font-semibold">
-                      {stats.activeListings > 0 && stats.completedOrders > 0 
-                        ? `${Math.round((stats.completedOrders / stats.activeListings) * 100)}%`
-                        : '0%'}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Avg. Response Time</span>
-                    <span className="font-semibold">2.4 hrs</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-white p-6 rounded-xl shadow-sm border">
-                <h4 className="font-semibold mb-4">Sales Performance</h4>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Total Sales</span>
-                    <span className="font-semibold">{stats.completedOrders}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Avg. Order Value</span>
-                    <span className="font-semibold">
-                      {stats.completedOrders > 0 
-                        ? `$${Math.round(stats.totalEarnings / stats.completedOrders)}`
-                        : '$0'}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Revenue Growth</span>
-                    <span className="font-semibold text-green-600">+12.5%</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-xl shadow-sm border p-6">
-              <h4 className="font-semibold mb-4">Monthly Performance</h4>
-              <div className="h-64 flex items-center justify-center border rounded-lg bg-gray-50">
-                <p className="text-gray-500">Chart visualization coming soon</p>
-              </div>
-            </div>
-          </div>
-        );
-      
       default:
         return (
           <div className="space-y-6">
             <div>
-              <div className="flex justify-between items-center mb-4">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                 <h3 className="text-lg font-semibold">Recent Activity</h3>
                 <button 
                   onClick={() => loadUserData(user?.id)}
-                  className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                  className="text-blue-600 hover:text-blue-700 text-sm font-medium px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition"
                 >
                   Refresh
                 </button>
@@ -2123,10 +2087,10 @@ export default function Dashboard() {
                   recentActivity.map((activity, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition"
+                      className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition"
                       onClick={activity.action}
                     >
-                      <div className="flex items-center space-x-4">
+                      <div className="flex items-start sm:items-center space-x-4 mb-3 sm:mb-0">
                         <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${activity.color}`}>
                           <activity.icon className="w-5 h-5" />
                         </div>
@@ -2135,7 +2099,7 @@ export default function Dashboard() {
                           <p className="text-sm text-gray-500">{activity.description}</p>
                         </div>
                       </div>
-                      <div className="text-right">
+                      <div className="text-left sm:text-right">
                         <p className="text-sm text-gray-500">{activity.time}</p>
                         <span className={`inline-block px-2 py-1 text-xs rounded-full ${
                           activity.status === 'completed' ? 'bg-green-100 text-green-800' :
@@ -2196,14 +2160,21 @@ export default function Dashboard() {
   return (
     <>
       {mobileSidebarOpen && (
-        <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setMobileSidebarOpen(false)} />
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden" 
+          onClick={() => setMobileSidebarOpen(false)}
+        />
       )}
 
-      <div className="flex h-screen bg-gray-50">
-        <aside className={`hidden lg:flex flex-col ${sidebarOpen ? 'w-72' : 'w-20'} bg-white border-r border-gray-200 transition-all duration-300 z-30`}>
-          <div className="p-6 border-b">
+      <div className="flex min-h-screen bg-gray-50">
+        {/* Desktop Sidebar */}
+        <aside 
+          ref={sidebarRef}
+          className={`hidden lg:flex flex-col ${sidebarOpen ? 'w-72' : 'w-20'} bg-white border-r border-gray-200 transition-all duration-300 z-30 fixed h-screen`}
+        >
+          <div className="p-6 border-b flex-shrink-0">
             <div className="flex items-center space-x-3">
-              <div className="relative w-10 h-10">
+              <div className="relative w-10 h-10 flex-shrink-0">
                 <Image
                   src="/images/logo/logo1.png"
                   alt="PilotWardrobe Logo"
@@ -2213,23 +2184,23 @@ export default function Dashboard() {
                 />
               </div>
               {sidebarOpen && (
-                <h1 className="text-xl font-bold text-gray-900 tracking-tight">
+                <h1 className="text-xl font-bold text-gray-900 tracking-tight truncate">
                   Pilot<span className="text-blue-600">Wardrobe</span>
                 </h1>
               )}
             </div>
           </div>
 
-          <div className="p-6 border-b">
+          <div className="p-6 border-b flex-shrink-0">
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center text-black font-bold text-lg">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center text-black font-bold text-lg flex-shrink-0">
                 {user?.email?.[0]?.toUpperCase()}
               </div>
               {sidebarOpen && (
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold truncate">{user?.user_metadata?.full_name || user?.email}</p>
                   <div className="flex items-center gap-1">
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-500 truncate">
                       {stats.activeListings > 0 ? `${stats.activeListings} Active Listings` : 'New User'}
                     </span>
                   </div>
@@ -2238,7 +2209,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <nav className="flex-1 p-4 overflow-y-auto">
+          <nav className="flex-1 p-4 overflow-y-auto min-h-0">
             <ul className="space-y-2">
               {sidebarItems.map(item => (
                 <li key={item.id}>
@@ -2254,11 +2225,11 @@ export default function Dashboard() {
                     }`}
                   >
                     <div className="flex items-center space-x-3">
-                      <item.icon className="w-5 h-5" />
-                      {sidebarOpen && <span className="font-medium">{item.label}</span>}
+                      <item.icon className="w-5 h-5 flex-shrink-0" />
+                      {sidebarOpen && <span className="font-medium truncate">{item.label}</span>}
                     </div>
                     {sidebarOpen && item.badge !== null && item.badge > 0 && (
-                      <span className={`px-2 py-1 text-xs rounded-full ${activeTab === item.id ? 'bg-blue-600 text-black' : 'bg-gray-200 text-gray-700'}`}>
+                      <span className={`px-2 py-1 text-xs rounded-full flex-shrink-0 ${activeTab === item.id ? 'bg-blue-600 text-black' : 'bg-gray-200 text-gray-700'}`}>
                         {item.badge}
                       </span>
                     )}
@@ -2287,19 +2258,22 @@ export default function Dashboard() {
             )}
           </nav>
 
-          <div className="p-4 border-t">
+          <div className="p-4 border-t flex-shrink-0">
             <button 
               onClick={handleSignOut}
               className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-red-50 text-red-600"
             >
-              <LogOut className="w-5 h-5" />
-              {sidebarOpen && <span className="font-medium">Sign Out</span>}
+              <LogOut className="w-5 h-5 flex-shrink-0" />
+              {sidebarOpen && <span className="font-medium truncate">Sign Out</span>}
             </button>
           </div>
         </aside>
 
-        <aside className={`lg:hidden fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-xl transform ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform`}>
-          <div className="p-6 border-b flex justify-between items-center">
+        {/* Mobile Sidebar */}
+        <aside 
+          className={`lg:hidden fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-xl transform ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform h-screen flex flex-col`}
+        >
+          <div className="p-6 border-b flex-shrink-0 flex justify-between items-center">
             <div className="flex items-center space-x-3">
               <div className="relative w-10 h-10">
                 <Image
@@ -2309,26 +2283,26 @@ export default function Dashboard() {
                   className="object-contain"
                 />
               </div>
-              <h1 className="text-xl font-bold">PilotWardrobe</h1>
+              <h1 className="text-xl font-bold truncate">PilotWardrobe</h1>
             </div>
             <button onClick={() => setMobileSidebarOpen(false)}><X className="w-6 h-6" /></button>
           </div>
           
-          <div className="p-6 border-b">
+          <div className="p-6 border-b flex-shrink-0">
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center text-black font-bold text-lg">
                 {user?.email?.[0]?.toUpperCase()}
               </div>
-              <div>
+              <div className="min-w-0">
                 <p className="font-semibold truncate">{user?.user_metadata?.full_name || user?.email}</p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-500 truncate">
                   {stats.activeListings > 0 ? `${stats.activeListings} Active Listings` : 'New User'}
                 </p>
               </div>
             </div>
           </div>
           
-          <nav className="p-4 flex-1 overflow-y-auto">
+          <nav className="flex-1 p-4 overflow-y-auto min-h-0">
             <ul className="space-y-2">
               {sidebarItems.map(item => (
                 <li key={item.id}>
@@ -2344,11 +2318,11 @@ export default function Dashboard() {
                     }`}
                   >
                     <div className="flex items-center space-x-3">
-                      <item.icon className="w-5 h-5" />
-                      <span className="font-medium">{item.label}</span>
+                      <item.icon className="w-5 h-5 flex-shrink-0" />
+                      <span className="font-medium truncate">{item.label}</span>
                     </div>
                     {item.badge !== null && item.badge > 0 && (
-                      <span className="px-2 py-1 text-xs bg-gray-200 rounded-full">
+                      <span className="px-2 py-1 text-xs bg-gray-200 rounded-full flex-shrink-0">
                         {item.badge}
                       </span>
                     )}
@@ -2377,7 +2351,7 @@ export default function Dashboard() {
             </div>
           </nav>
           
-          <div className="p-4 border-t">
+          <div className="p-4 border-t flex-shrink-0">
             <button 
               onClick={handleSignOut}
               className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl bg-red-50 text-red-600"
@@ -2388,26 +2362,27 @@ export default function Dashboard() {
           </div>
         </aside>
 
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <header className="bg-white border-b px-6 py-4 sticky top-0 z-20">
+        {/* Main Content */}
+        <div className={`flex-1 flex flex-col ${sidebarOpen ? 'lg:ml-72' : 'lg:ml-20'} transition-all duration-300 min-w-0`}>
+          <header className="bg-white border-b px-4 sm:px-6 py-4 sticky top-0 z-20">
             <div className="flex justify-between items-center">
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2 sm:space-x-4">
                 <button onClick={toggleSidebar} className="p-2 hover:bg-gray-100 rounded-lg">
                   <Menu className="w-6 h-6 lg:hidden" />
                   <ChevronRight className={`w-5 h-5 hidden lg:block transition-transform ${sidebarOpen ? 'rotate-180' : ''}`} />
                 </button>
-                <div className="relative">
+                <div className="relative flex-1 sm:flex-none">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input 
                     type="text" 
-                    placeholder="Search gear, orders, requests..." 
+                    placeholder="Search..." 
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-12 pr-6 py-3 bg-gray-100 rounded-xl w-96 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="pl-12 pr-6 py-3 bg-gray-100 rounded-xl w-full sm:w-64 lg:w-96 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2 sm:space-x-4">
                 <button className="relative p-2 hover:bg-gray-100 rounded-lg">
                   <Bell className="w-5 h-5" />
                   {stats.unreadMessages > 0 && (
@@ -2423,27 +2398,28 @@ export default function Dashboard() {
             </div>
           </header>
 
-          <main className="flex-1 p-6 overflow-auto">
+          <main className="flex-1 p-4 sm:p-6 overflow-auto">
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
                 Welcome back, {user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'Pilot'}! 👋
               </h1>
-              <p className="text-gray-600 mt-2">
+              <p className="text-gray-600 mt-2 text-sm sm:text-base">
                 {stats.activeListings > 0 
                   ? `You have ${stats.activeListings} active listings and ${stats.pendingOrders} pending orders.`
                   : 'Start by listing your first item to begin selling!'}
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
+            {/* Stats Cards Grid - Responsive */}
+            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4 mb-8">
               {statsCards.map((stat, index) => (
-                <div key={index} className="bg-white p-5 rounded-xl shadow-sm border hover:shadow-md transition">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className={`w-12 h-12 bg-gradient-to-br ${stat.color} rounded-lg flex items-center justify-center`}>
-                      <stat.icon className="w-6 h-6 text-black" />
+                <div key={index} className="bg-white p-4 sm:p-5 rounded-xl shadow-sm border hover:shadow-md transition min-w-0">
+                  <div className="flex justify-between items-start mb-3 sm:mb-4">
+                    <div className={`w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br ${stat.color} rounded-lg flex items-center justify-center flex-shrink-0`}>
+                      <stat.icon className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
                     </div>
-                    <div className="text-right">
-                      <span className={`text-sm font-medium ${
+                    <div className="text-right ml-2 min-w-0">
+                      <span className={`text-xs sm:text-sm font-medium block truncate ${
                         stat.trend === 'up' ? 'text-green-600' :
                         stat.trend === 'down' ? 'text-red-600' : 'text-gray-500'
                       }`}>
@@ -2451,22 +2427,22 @@ export default function Dashboard() {
                       </span>
                     </div>
                   </div>
-                  <p className="text-2xl font-bold mb-1">{stat.value}</p>
-                  <p className="text-gray-600 text-sm">{stat.label}</p>
+                  <p className="text-xl sm:text-2xl font-bold mb-1 truncate">{stat.value}</p>
+                  <p className="text-gray-600 text-xs sm:text-sm truncate">{stat.label}</p>
                 </div>
               ))}
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-6">
-                <div className="bg-white rounded-xl shadow-sm border">
-                  <div className="border-b">
-                    <div className="flex space-x-1 p-4">
+                <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+                  <div className="border-b overflow-x-auto">
+                    <div className="flex space-x-1 p-4 min-w-max">
                       {['Listings', 'Orders', 'Requests', 'Analytics', 'Payments', 'Aviation-images'].map((tab) => (
                         <button
                           key={tab}
                           onClick={() => setActiveTab(tab.toLowerCase())}
-                          className={`px-4 py-2 rounded-lg font-medium transition ${
+                          className={`px-4 py-2 rounded-lg font-medium transition whitespace-nowrap ${
                             activeTab === tab.toLowerCase()
                               ? 'bg-blue-50 text-blue-700'
                               : 'text-gray-600 hover:text-gray-900'
@@ -2478,7 +2454,7 @@ export default function Dashboard() {
                     </div>
                   </div>
 
-                  <div className="p-6">
+                  <div className="p-4 sm:p-6">
                     {renderContent()}
                   </div>
                 </div>
@@ -2490,31 +2466,31 @@ export default function Dashboard() {
                   <div className="grid grid-cols-2 gap-3">
                     <Link
                       href="/sell"
-                      className="p-4 bg-blue-50 hover:bg-blue-100 rounded-xl text-center transition group"
+                      className="p-3 sm:p-4 bg-blue-50 hover:bg-blue-100 rounded-xl text-center transition group"
                     >
-                      <PlusCircle className="w-8 h-8 mx-auto mb-2 text-black-600 group-hover:scale-110 transition" />
-                      <p className="font-medium">Sell Gear</p>
+                      <PlusCircle className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 text-black-600 group-hover:scale-110 transition" />
+                      <p className="font-medium text-sm sm:text-base">Sell Gear</p>
                     </Link>
                     <Link
                       href="/request-item"
-                      className="p-4 bg-purple-50 hover:bg-purple-100 rounded-xl text-center transition group"
+                      className="p-3 sm:p-4 bg-purple-50 hover:bg-purple-100 rounded-xl text-center transition group"
                     >
-                      <Target className="w-8 h-8 mx-auto mb-2 text-purple-600 group-hover:scale-110 transition" />
-                      <p className="font-medium">Request Item</p>
+                      <Target className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 text-purple-600 group-hover:scale-110 transition" />
+                      <p className="font-medium text-sm sm:text-base">Request Item</p>
                     </Link>
                     <Link
                       href="/marketplace"
-                      className="p-4 bg-green-50 hover:bg-green-100 rounded-xl text-center transition group"
+                      className="p-3 sm:p-4 bg-green-50 hover:bg-green-100 rounded-xl text-center transition group"
                     >
-                      <ShoppingBag className="w-8 h-8 mx-auto mb-2 text-green-600 group-hover:scale-110 transition" />
-                      <p className="font-medium">Browse</p>
+                      <ShoppingBag className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 text-green-600 group-hover:scale-110 transition" />
+                      <p className="font-medium text-sm sm:text-base">Browse</p>
                     </Link>
                     <Link
                       href="/dashboard/payments"
-                      className="p-4 bg-amber-50 hover:bg-amber-100 rounded-xl text-center transition group"
+                      className="p-3 sm:p-4 bg-amber-50 hover:bg-amber-100 rounded-xl text-center transition group"
                     >
-                      <CreditCard className="w-8 h-8 mx-auto mb-2 text-amber-600 group-hover:scale-110 transition" />
-                      <p className="font-medium">Payments</p>
+                      <CreditCard className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 text-amber-600 group-hover:scale-110 transition" />
+                      <p className="font-medium text-sm sm:text-base">Payments</p>
                     </Link>
                   </div>
                 </div>
@@ -2530,14 +2506,14 @@ export default function Dashboard() {
                     {messages.length > 0 ? (
                       messages.slice(0, 3).map((message) => (
                         <div key={message.id} className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
-                          <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-200 rounded-full flex-shrink-0"></div>
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium truncate">
+                            <p className="font-medium truncate text-sm sm:text-base">
                               {message.sender_id === user?.id ? 'You' : 'Other User'}
                             </p>
-                            <p className="text-sm text-gray-500 truncate">{message.content}</p>
+                            <p className="text-xs sm:text-sm text-gray-500 truncate">{message.content}</p>
                           </div>
-                          <span className="text-xs text-gray-400">
+                          <span className="text-xs text-gray-400 flex-shrink-0">
                             {new Date(message.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                           </span>
                         </div>
@@ -2556,14 +2532,14 @@ export default function Dashboard() {
                     <Zap className="w-6 h-6" />
                     <h3 className="font-semibold">Pro Tip</h3>
                   </div>
-                  <p className="mb-4">
+                  <p className="mb-4 text-sm sm:text-base">
                     {stats.activeListings > 0
                       ? 'Add detailed photos and accurate descriptions to increase your sales by up to 40%.'
                       : 'Start by listing high-quality photos and detailed descriptions for better sales.'}
                   </p>
                   <Link
                     href={stats.activeListings > 0 ? "/sell" : "/guide"}
-                    className="block w-full py-2 bg-white/20 hover:bg-white/30 rounded-lg transition text-center"
+                    className="block w-full py-2 bg-white/20 hover:bg-white/30 rounded-lg transition text-center text-sm sm:text-base"
                   >
                     Learn More
                   </Link>

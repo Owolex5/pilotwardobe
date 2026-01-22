@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Breadcrumb from '@/components/Common/Breadcrumb'
+
 import {
   Target,
   Search,
@@ -543,28 +544,32 @@ export default function RequestItemPage() {
                   </div>
                   
                   {/* Submit */}
-                  <div className="text-center pt-6">
-                    <button
-                      type="submit"
-                      disabled={loading || !request.name || !request.email || !request.title || !request.category}
-                      className="px-16 py-5 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 text-white font-bold text-xl rounded-xl hover:opacity-90 transition shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 mx-auto"
-                    >
-                      {loading ? (
-                        <>
-                          <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
-                          Processing...
-                        </>
-                      ) : (
-                        <>
-                          Submit Request
-                          <Send className="w-5 h-5" />
-                        </>
-                      )}
-                    </button>
-                    <p className="text-gray-600 mt-4">
-                      By submitting, you agree to our notifications. No spam, ever.
-                    </p>
-                  </div>
+<div className="text-center pt-6">
+  <button
+    type="submit"
+    disabled={loading || !request.name || !request.email || !request.title || !request.category}
+    className="min-w-[280px] px-16 py-5 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 hover:from-blue-700 hover:via-purple-700 hover:to-blue-700 rounded-xl transition-all duration-300 shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 mx-auto border-0"
+  >
+    {loading ? (
+      <div className="flex items-center gap-3">
+        <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+        <span className="text-blue font-bold text-xl">Processing...</span>
+      </div>
+    ) : (
+      <div className="flex items-center gap-3">
+        {/* Explicitly wrapping in a span to force text color visibility */}
+        <span className="text-blue font-bold text-xl inline-block">
+          Submit Request
+        </span>
+        <Send className="w-6 h-6 text-white" />
+      </div>
+    )}
+  </button>
+  
+  <p className="text-gray-600 mt-4 text-sm">
+    By submitting, you agree to our notifications. No spam, ever.
+  </p>
+</div>
                 </form>
               </div>
             </div>

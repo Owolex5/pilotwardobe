@@ -114,9 +114,19 @@ export default function AboutPage() {
       <section className="py-24 bg-white">
         <div className="container mx-auto px-6 max-w-5xl">
           <div className="bg-slate-50 rounded-[3rem] p-8 md:p-16 border border-slate-100 relative overflow-hidden">
-            {/* Background Icon */}
-            <svg className="absolute top-10 right-10 w-64 h-64 text-slate-200/50 -rotate-12 pointer-events-none" fill="currentColor" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
-            
+            {/* Background Icon: Made more transparent and positioned behind text */}
+<svg
+  className="absolute top-10 right-10 w-64 h-64 -rotate-12 pointer-events-none z-0"
+  fill="none"                // No fill
+  stroke="currentColor"      // Outline color
+  strokeWidth="0.5"          // Very thin outline
+  strokeOpacity="0.47"       // Very faint
+  viewBox="0 0 24 24"
+>
+  <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
+</svg>
+
+            {/* Content Layer: Ensure z-10 is kept so text sits on top */}
             <div className="relative z-10">
               <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-8">
                 From the Flight Deck
@@ -133,11 +143,8 @@ export default function AboutPage() {
                   "PilotWardrobe isn't just a store; it's a community solution. We verify users, ensure fair pricing, and help student pilots get the gear they need without breaking the bank. Welcome aboard."
                 </p>
               </div>
-
+            
               <div className="mt-12 flex items-center gap-6">
-                {/* <div className="w-16 h-16 rounded-full bg-slate-200 overflow-hidden relative">
-                   <Image src="/images/founder-thumb.jpg" alt="Captain Ayeni" fill className="object-cover" />
-                </div> */}
                 <div>
                   <p className="font-bold text-slate-900 text-lg">Captain Ayeni James</p>
                   <p className="text-blue-600 font-medium">Founder & Commercial Pilot</p>
