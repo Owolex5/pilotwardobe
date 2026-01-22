@@ -48,7 +48,7 @@ const PilotWardrobeNav = () => {
     { label: "Sunglasses", value: "sunglasses" },
     { label: "Flight Bags", value: "bags" },
     { label: "Watches", value: "watches" },
-    { label: "Aircraft Parts", value: "parts" },
+    // { label: "Aircraft Parts", value: "parts" },
     { label: "Accessories", value: "accessories" },
   ];
 
@@ -100,7 +100,7 @@ const PilotWardrobeNav = () => {
                       onChange={(e) => setSearchQuery(e.target.value)}
                       value={searchQuery}
                       type="search"
-                      placeholder="Search headsets, uniforms, aircraft parts..."
+                      placeholder="Search headsets, uniforms, and accesories..."
                       autoComplete="off"
                       className="custom-search w-full rounded-r-[5px] bg-gray-1 !border-l-0 border border-gray-3 py-2.5 pl-4 pr-10 outline-none ease-in duration-200"
                     />

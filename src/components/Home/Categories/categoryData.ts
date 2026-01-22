@@ -36,12 +36,12 @@ const data = [
     img: "/images/pward/D2_Mach_2_1.webp",
     link: "/shop/watches",
   },
-  {
-    id: 7,
-    title: "Aircraft Parts",
-    img: "/images/pward/partsx.jpg",
-    link: "/shop/aircraft-parts",
-  },
+  // {
+  //   id: 7,
+  //   title: "Aircraft Parts",
+  //   img: "/images/pward/partsx.jpg",
+  //   link: "/shop/aircraft-parts",
+  // },
   {
     id: 8,
     title: "Gadgets & Accessories",

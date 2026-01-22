@@ -68,26 +68,22 @@ const nextConfig = {
       },
 
       // Aircraft Parts variations
-      {
-        source: '/shop/aircraftparts',
-        destination: '/shop/aircraft-parts',
-        permanent: true,
-      },
-      {
-        source: '/shop/airplane-parts',
-        destination: '/shop/aircraft-parts',
-        permanent: true,
-      },
-      {
-        source: '/shop/aircraftpart',
-        destination: '/shop/aircraft-parts',
-        permanent: true,
-      },
-      {
-        source: '/shop/parts',
-        destination: '/shop/aircraft-parts',
-        permanent: true,
-      },
+      // {
+      //   source: '/shop/aircraftparts',
+      //   destination: '/shop/aircraft-parts',
+      //   permanent: true,
+      // },
+      // {
+      //   source: '/shop/airplane-parts',
+      //   destination: '/shop/aircraft-parts',
+      //   permanent: true,
+      // },
+      // {
+      //   source: '/shop/aircraftpart',
+      //   destination: '/shop/aircraft-parts',
+      //   permanent: true,
+      // },
+
     ];
   },
 };
