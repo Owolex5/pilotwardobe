@@ -200,7 +200,7 @@ const ShopWithoutSidebar = () => {
           Turn your cockpit views and wing-tip sunsets into revenue. Join our premium gallery where pilots sell high-res images to enthusiasts.
         </p>
         <div>
-          <Link href="/aviation-images" className="inline-flex items-center gap-2 px-8 py-4 bg-white text-blue-700 font-bold rounded-xl hover:bg-blue-50 transition-all hover:scale-105 shadow-lg">
+          <Link href="shop/aviation-images" className="inline-flex items-center gap-2 px-8 py-4 bg-white text-blue-700 font-bold rounded-xl hover:bg-blue-50 transition-all hover:scale-105 shadow-lg">
             Explore Image Gallery 
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
